@@ -43,6 +43,8 @@ ARM 架構（Advanced RISC Machine），我們是指一系列基於 RISC（精�
 | 多核心支援 | 尤其在 Cortex-A 系列中 |
 | 廣泛支援度 | 廠商多（如 STM、NXP、TI）、開發工具齊全 |
 
+</br>
+
 ARM 架構的分類：
 | 系列 | 主要用途 | 常見核心 | 描述 |
 |---|---|---|---|
@@ -59,7 +61,13 @@ ARM 架構的分類：
 這裡將會講述全部的觀念。
 </br>
 
+## 觀念
+在最一開始大家入門**韌體**時想必都是使用 Keil 下載好出廠的 Example Code 直接更改 Main 燒錄就好！</br>
+現在可以想像自己需要在沒有出廠的 Example 情況下寫出一個可以使用的**開機程式**並且設計周邊可以使用的**Driver**！</br>
+聽起來好像很難，現在可以聽我娓娓道來！</br>
 </br>
+
+在開始講解之前，先來了解一下編譯一個 Code 會需要甚麼，當我們輕鬆按下編譯按鈕時，其實會有一個叫做 Makefile 的東西在運作，Makefile 就是所謂的**規則**
 
 專案編譯與建置中需要的知識：Makefile、Linker Script、Assembly Language </br>
 下圖為三者之間的關係：開發 Bare-Metal，需要 Assembly 啟動檔(startup.s)、連結腳本(Linker Scripts)、系統相關環境初始化(system.c)、主程式區塊(main.c)、相關 I/O 函式庫(Drivers.c)與編譯時的規則 (Makefile)。</br>
@@ -68,15 +76,11 @@ ARM 架構的分類：
 
 </br>
 
-## 觀念
-在最一開始大家入門**韌體**時想必都是使用 Keil 下載好出廠的 Example Code 直接更改 Main 燒錄就好！</br>
-現在可以想像自己需要在沒有出廠的 Example 情況下寫出一個可以使用的**開機程式**並且設計周邊可以使用的**Driver**！</br>
-聽起來好像很難，現在可以聽我娓娓道來！</br>
 
 
 
-</br>
 
 ## 參考資料
 [RISC-V vs. Arm：通用MCU和邊緣AI晶片應如何選擇？](https://www.eettaiwan.com/20220620nt31-risc-v-vs-arm/)</br>
+
 []()
