@@ -66,6 +66,16 @@ ARM 架構的分類：
 
 ![Project_file_dependent_surname](Project_file_dependent_surname.png)
 
+</br>
+
+## 觀念
+在最一開始大家入門**韌體**時想必都是使用 Keil 下載好出廠的 Example Code 直接更改 Main 燒錄就好！</br>
+現在可以想像自己需要在沒有出廠的 Example 情況下寫出一個可以使用的**開機程式**並且設計周邊可以使用的**Driver**！</br>
+聽起來好像很難，現在可以聽我娓娓道來！</br>
+
+
+
+</br>
 
 ## 參考資料
 [RISC-V vs. Arm：通用MCU和邊緣AI晶片應如何選擇？](https://www.eettaiwan.com/20220620nt31-risc-v-vs-arm/)</br>
