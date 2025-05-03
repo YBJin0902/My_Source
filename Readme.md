@@ -8,3 +8,6 @@
 [硬體相關](https://hackmd.io/@8Ro9pnQxT--GAsJhHwraaQ/H1n8QzzVC)</br>
 
 
+</br>
+
+# 這裡只純分享~ 無任何商業用途~ 也無宣傳~
