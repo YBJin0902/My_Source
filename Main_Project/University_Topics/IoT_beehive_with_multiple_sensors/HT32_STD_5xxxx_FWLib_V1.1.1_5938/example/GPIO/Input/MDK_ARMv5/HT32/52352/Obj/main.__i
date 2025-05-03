@@ -1,0 +1,6 @@
+-xc -std=c90 --target=arm-arm-none-eabi -mcpu=cortex-m0plus -c
+-fno-rtti -funsigned-char -fshort-enums -fshort-wchar
+-D__EVAL -D__MICROLIB -gdwarf-4 -O2 -ffunction-sections -Wno-packed -Wno-missing-variable-declarations -Wno-missing-prototypes -Wno-missing-noreturn -Wno-sign-conversion -Wno-nonportable-include-path -Wno-reserved-id-macro -Wno-unused-macros -Wno-documentation-unknown-command -Wno-documentation -Wno-license-management -Wno-parentheses-equality -Wno-reserved-identifier -I ../ -I ../../../../library/CMSIS/Include -I ../../../../library/Device/Holtek/HT32F5xxxx/Include -I ../../../../library/HT32F5xxxx_Driver/inc -I ../../../../library/HT32_USBD_Library/inc -I ../../../../utilities
+-IC:/Users/1/AppData/Local/Arm/Packs/Holtek/HT32_DFP/1.0.39/ARM/INC/Holtek/HT32F5xxxx
+-D__UVISION_VERSION="537" -DUSE_HT32F52342_52 -DUSE_HT32_DRIVER -DUSE_HT32F52352_SK -DUSE_HT32F52342_52 -DUSE_MEM_HT32F52352
+-o ./ht32/52352/obj/main.o -MD "../main.c"
