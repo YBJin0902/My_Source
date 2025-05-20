@@ -57,11 +57,11 @@ extern void NB_IOT_SEND_ALL(void);
 extern void NB_Iotset(void);
 extern void AM2320(void);
 u8 rx_data;
-u8 lora_data;
+
 u8 gps_data;
 
 char RXRD_BUF[100];
-char lora_BUF[100];
+
 char gps_BUF[100];
 
 char *s;
@@ -69,12 +69,19 @@ char *s;
 u32 OK_flag;
 
 u32 RXRD;
-u32 lora_RXRD;
+
 u32 gps_RXRD;
 
 u32 RXRD_Index = 0;
-u32 lora_Index = 0;
+
 u32 gps_Index = 0;
+
+
+u8 lora_data;
+char lora_BUF[100];
+u32 lora_RXRD;
+u32 lora_Index = 0;
+
 
 
 /* Global functions ----------------------------------------------------------------------------------------*/
