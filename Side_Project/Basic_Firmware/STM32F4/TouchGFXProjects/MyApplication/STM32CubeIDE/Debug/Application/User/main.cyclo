@@ -1,0 +1,5 @@
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/main.c:142:6:SystemClock_Config	1
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/main.c:83:5:main	1
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/main.c:186:16:BSP_QSPI_EnableMemoryMappedMode	1
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/main.c:223:6:HAL_TIM_PeriodElapsedCallback	2
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/main.c:241:6:Error_Handler	1

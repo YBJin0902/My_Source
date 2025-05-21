@@ -1,0 +1,10 @@
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:72:6:NMI_Handler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:85:6:HardFault_Handler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:100:6:MemManage_Handler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:115:6:BusFault_Handler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:130:6:UsageFault_Handler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:145:6:DebugMon_Handler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:165:6:EXTI4_IRQHandler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:179:6:EXTI9_5_IRQHandler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:193:6:I2C1_EV_IRQHandler	0	static
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/Core/Src/stm32f4xx_it.c:207:6:TIM6_IRQHandler	0	static
