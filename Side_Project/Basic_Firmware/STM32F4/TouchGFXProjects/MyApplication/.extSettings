@@ -1,0 +1,5 @@
+[ProjectFiles]
+HeaderPath=../Drivers/BSP/Components/Common
+[Groups]
+Application/User/TouchGFX/target=../TouchGFX/target/CortexMMCUInstrumentation.cpp
+[Others]

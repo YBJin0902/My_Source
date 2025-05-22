@@ -1,0 +1,10 @@
+../../Middlewares/ST/touchgfx/framework/include/touchgfx/hal/DMA.hpp:144:18:virtual void touchgfx::DMA_Interface::initialize()	1
+../../Middlewares/ST/touchgfx/framework/include/touchgfx/hal/DMA.hpp:234:21:virtual touchgfx::DMAType touchgfx::DMA_Interface::getDMAType()	1
+../../TouchGFX/target/generated/STM32DMA.hpp:73:18:virtual void STM32DMA::signalDMAInterrupt()	1
+../../TouchGFX/target/generated/STM32DMA.hpp:83:18:virtual void STM32DMA::flush()	1
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/TouchGFX/target/generated/STM32DMA.cpp:27:26:virtual touchgfx::BlitOperations STM32DMA::getBlitCaps()	1
+../../TouchGFX/target/generated/STM32DMA.hpp:31:7:STM32DMA::~STM32DMA()	1
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/TouchGFX/target/generated/STM32DMA.cpp:32:6:virtual void STM32DMA::setupDataCopy(const touchgfx::BlitOp&)	0
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/TouchGFX/target/generated/STM32DMA.cpp:37:6:virtual void STM32DMA::setupDataFill(const touchgfx::BlitOp&)	0
+../../TouchGFX/target/generated/STM32DMA.hpp:31:7:virtual STM32DMA::~STM32DMA()	1
+C:/GIT/Main/My_Source/Side_Project/Basic_Firmware/STM32F4/TouchGFXProjects/MyApplication/TouchGFX/target/generated/STM32DMA.cpp:22:1:STM32DMA::STM32DMA()	1
