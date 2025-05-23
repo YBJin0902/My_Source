@@ -16,7 +16,7 @@ Bare-Metal（中文常譯為「裸機」）是一種不依賴作業系統（如 
 
 下圖為裸機流程圖，從圖中可以了解到，硬體開機後一直到 Main Function 的 Loop 發生了甚麼 ~ </br>
 
-![Bare_Metal_Flowchart](Bare_Metal_Flowchart.png)
+![Bare_Metal_Flowchart](images/Bare_Metal_Flowchart.png)
 
 </br>
 
@@ -102,7 +102,7 @@ Linker script 是給 linker（連結器）使用的設定檔，通常副檔名�
 Start-up code 是第一個在 MCU POR（Power on reset）後運行的程式，他可以引導 MCU 所需的關鍵部分初始化以及隨後目標 Application 的啟動。</br>
 執行基本任務，使 MCU 準備好運行 Application 。</br>
 
-![MCU_Startup_Relationship_diagram](MCU_Assembly_Startup_Relationship_diagram.png)
+![MCU_Startup_Relationship_diagram](images/MCU_Assembly_Startup_Relationship_diagram.png)
 
 簡單來說：Startup code 可以幫助我們切入 main 主程式，還有當 code 結束時該怎麼做，最重要的是要與 Linker Script 連結，進行各種初始化。
 
@@ -116,7 +116,7 @@ Start-up code 是第一個在 MCU POR（Power on reset）後運行的程式，�
 
 下圖為三者之間的關係：開發 Bare-Metal，需要 Assembly 啟動檔(startup.s)、連結腳本(Linker Scripts)、系統相關環境初始化(system.c)、主程式區塊(main.c)、相關 I/O 函式庫(Drivers.c)與編譯時的規則 (Makefile)。</br>
 
-![Project_file_dependent_surname](Project_file_dependent_surname.png)
+![Project_file_dependent_surname](images/Project_file_dependent_surname.png)
 
 </br>
 
