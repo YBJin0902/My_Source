@@ -1,0 +1,56 @@
+"========== SECTION HEADERS ==========" 
+
+test.elf:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00000006  08000000  08000000  00020000  2**1
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000004  20000000  00000000  00010000  2**2
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          00000004  20000004  00000004  00010004  2**2
+                  ALLOC
+  3 ._user_heap_stack 00004000  20000008  00000008  00010004  2**0
+                  ALLOC
+  4 .comment      00000049  00000000  00000000  00020006  2**0
+                  CONTENTS, READONLY
+  5 .ARM.attributes 0000002e  00000000  00000000  0002004f  2**0
+                  CONTENTS, READONLY
+"\n\n========== SYMBOL TABLE ==========" 
+
+Symbol table '.symtab' contains 22 entries:
+   Num:    Value  Size Type    Bind   Vis      Ndx Name
+     0: 00000000     0 NOTYPE  LOCAL  DEFAULT  UND 
+     1: 08000000     0 SECTION LOCAL  DEFAULT    1 
+     2: 20000000     0 SECTION LOCAL  DEFAULT    2 
+     3: 20000004     0 SECTION LOCAL  DEFAULT    3 
+     4: 20000008     0 SECTION LOCAL  DEFAULT    4 
+     5: 00000000     0 SECTION LOCAL  DEFAULT    5 
+     6: 00000000     0 SECTION LOCAL  DEFAULT    6 
+     7: 00000000     0 FILE    LOCAL  DEFAULT  ABS test.c
+     8: 20000000     0 NOTYPE  LOCAL  DEFAULT    2 $d
+     9: 20000004     0 NOTYPE  LOCAL  DEFAULT    3 $d
+    10: 08000000     0 NOTYPE  LOCAL  DEFAULT    1 $t
+    11: 20000000     0 NOTYPE  GLOBAL DEFAULT    2 __data_start__
+    12: 00000000     0 NOTYPE  GLOBAL DEFAULT  ABS __etext
+    13: 20000004     0 NOTYPE  GLOBAL DEFAULT    3 __bss_start__
+    14: 20000000     4 OBJECT  GLOBAL DEFAULT    2 global_data
+    15: 20000004     4 OBJECT  GLOBAL DEFAULT    3 global_bss
+    16: 00000000     0 NOTYPE  GLOBAL DEFAULT  UND Reset_Handler
+    17: 20000004     0 NOTYPE  GLOBAL DEFAULT    2 __data_end__
+    18: 20000008     0 NOTYPE  GLOBAL DEFAULT    3 __bss_end__
+    19: 08000001     6 FUNC    GLOBAL DEFAULT    1 main
+    20: 20004008     0 NOTYPE  GLOBAL DEFAULT    4 __stack_end__
+    21: 20000008     0 NOTYPE  GLOBAL DEFAULT    4 __stack_start__
+"\n\n========== NM SYMBOLS (Sorted) ==========" 
+         U Reset_Handler
+00000000 A __etext
+08000000 T main
+20000000 D __data_start__
+20000000 D global_data
+20000004 B __bss_start__
+20000004 D __data_end__
+20000004 B global_bss
+20000008 B __bss_end__
+20000008 B __stack_start__
+20004008 B __stack_end__
