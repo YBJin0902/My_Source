@@ -2,8 +2,9 @@
 # 基本設定
 # =======================
 TARGET = demo
-CC = arm-none-eabi-gcc
-CFLAGS = -Wall -Iinc -O2
+CC = gcc
+CFLAGS = -Wall -Iinclude -O2
+LDFLAGS =
 SRC_DIR = src
 OBJ_DIR = build
 
@@ -29,7 +30,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 
 # 建立輸出目錄
 $(OBJ_DIR):
-	mkdir -p $(OBJ_DIR)
+	-@if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
 
 # =======================
 # 額外功能目標
@@ -55,4 +56,6 @@ nm: $(TARGET)
 # 清除
 # =======================
 clean:
-	rm -rf $(OBJ_DIR) $(TARGET) *.asm *.sym
+	-@if exist build rmdir /s /q build
+	-@del /f /q demo.exe demo *.asm *.sym 2>nul
+
