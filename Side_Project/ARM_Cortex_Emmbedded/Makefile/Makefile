@@ -1,7 +1,7 @@
 # =======================
-# 基本設定
+# Basic Configuration
 # =======================
-TARGET = demo
+TARGET = demo.exe
 CC = gcc
 CFLAGS = -Wall -Iinclude -O2
 LDFLAGS =
@@ -11,51 +11,50 @@ OBJ_DIR = build
 SRCS := $(wildcard $(SRC_DIR)/*.c)
 OBJS := $(patsubst $(SRC_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
 
-.PHONY: all clean debug size objdump
+.PHONY: all clean debug size objdump nm
 
 # =======================
-# 預設目標
+# Default Target
 # =======================
 all: $(OBJ_DIR) $(TARGET)
 
-# 建立最終執行檔
+# Link the final executable
 $(TARGET): $(OBJS)
 	@echo Linking $@ ...
-	$(CC) $(LDFLAGS) -o $@ $^
+	@$(CC) $(LDFLAGS) -o $@ $^
 
-# 編譯每個 .c 為 .o
+# Compile each .c to .o
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@echo Compiling $< ...
-	$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-# 建立輸出目錄
+# Create output directory (Windows compatible)
 $(OBJ_DIR):
-	-@if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
+	@if not exist $(OBJ_DIR) mkdir $(OBJ_DIR)
 
 # =======================
-# 額外功能目標
+# Extra Utility Targets
 # =======================
-
 debug: CFLAGS += -g -DDEBUG
 debug: clean all
 
 size: $(TARGET)
-	@echo "程式大小："
+	@echo Program size:
 	@size $(TARGET)
 
 objdump: $(TARGET)
-	@echo "反組譯輸出："
-	objdump -d $(TARGET) > $(TARGET).asm
-	@echo "已輸出 $(TARGET).asm"
+	@echo Generating disassembly...
+	@objdump -d $(TARGET) > $(TARGET).asm
+	@echo Output: $(TARGET).asm
 
 nm: $(TARGET)
-	nm $(TARGET) > $(TARGET).sym
-	@echo "符號表輸出 $(TARGET).sym"
+	@nm $(TARGET) > $(TARGET).sym
+	@echo Output symbol table: $(TARGET).sym
 
 # =======================
-# 清除
+# Cleanup
 # =======================
 clean:
-	-@if exist build rmdir /s /q build
-	-@del /f /q demo.exe demo *.asm *.sym 2>nul
-
+	-@if exist $(OBJ_DIR) rmdir /s /q $(OBJ_DIR)
+	-@if exist $(TARGET) del /f /q $(TARGET)
+	-@del /f /q *.asm *.sym 2>nul
