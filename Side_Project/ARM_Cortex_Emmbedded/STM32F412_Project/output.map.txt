@@ -1,0 +1,75 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x08000000         0x00100000         xr
+RAM              0x20000000         0x00040000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD src/main.o
+LOAD startup.o
+START GROUP
+LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/thumb/v7-m/nofp\libgcc.a
+LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc.a
+END GROUP
+
+.text           0x08000000       0x10
+ *(.isr_vector)
+ *(.text*)
+ .text          0x08000000        0x0 src/main.o
+ .text.startup  0x08000000       0x10 src/main.o
+                0x08000000                main
+ .text          0x08000010        0x0 startup.o
+ *(.rodata*)
+
+.glue_7         0x08000010        0x0
+ .glue_7        0x08000010        0x0 linker stubs
+
+.glue_7t        0x08000010        0x0
+ .glue_7t       0x08000010        0x0 linker stubs
+
+.vfp11_veneer   0x08000010        0x0
+ .vfp11_veneer  0x08000010        0x0 linker stubs
+
+.v4_bx          0x08000010        0x0
+ .v4_bx         0x08000010        0x0 linker stubs
+
+.vector         0x20000000        0x0
+                0x20000000                        __vector_start__ = .
+ *(.vectors .vectors.*)
+                0x20000000                        __vectors_end__ = .
+
+.data           0x20000000        0x0
+                0x20000000                        __data_start__ = .
+ *(.data*)
+ .data          0x20000000        0x0 src/main.o
+ .data          0x20000000        0x0 startup.o
+                0x20000000                        __data_end__ = .
+
+.bss            0x20000000        0x0
+                0x20000000                        __bss_start__ = .
+ *(.bss*)
+ .bss           0x20000000        0x0 src/main.o
+ .bss           0x20000000        0x0 startup.o
+ *(COMMON)
+                0x20000000                        __bss_end__ = .
+
+.stack          0x20000000        0x0
+                0x20000000                        . = ALIGN (0x8)
+                0x20001000                        __stack_top = (. + 0x1000)
+                0x20000000                        __etext = LOADADDR (.data)
+OUTPUT(M4_baremetal.hex elf32-littlearm)
+LOAD linker stubs
+
+.comment        0x00000000       0x43
+ .comment       0x00000000       0x43 src/main.o
+                                 0x44 (size before relaxing)
+
+.ARM.attributes
+                0x00000000       0x2b
+ .ARM.attributes
+                0x00000000       0x2d src/main.o
+ .ARM.attributes
+                0x0000002d       0x21 startup.o
