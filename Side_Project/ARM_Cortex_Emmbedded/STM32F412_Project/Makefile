@@ -6,7 +6,7 @@ SIZE = arm-none-eabi-size
 AS = arm-none-eabi-as
 
 # MCU setup
-MCU_FLAGS = -mcpu=cortex-m3 -mthumb -mfloat-abi=soft
+MCU_FLAGS = -mcpu=cortex-m4 -mthumb -mfloat-abi=soft
 
 # Include file path
 INCLUDE = \

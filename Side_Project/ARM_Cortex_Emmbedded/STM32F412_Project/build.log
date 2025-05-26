@@ -1,3 +1,9 @@
 make[1]: Entering directory 'J:/The_pinnacle_of_technology_is_in_my_mind/My_Source/Side_Project/ARM_Cortex_Emmbedded/STM32F412_Project'
-make[1]: Nothing to be done for 'build'.
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft -Wall -O2  -c src/main.c -o src/main.o
+arm-none-eabi-as -mcpu=cortex-m4 -mthumb -mfloat-abi=soft  -o startup.o
+arm-none-eabi-gcc -mcpu=cortex-m4 -mthumb -mfloat-abi=soft src/main.o startup.o -T linker/linker.ld -nostartfiles \
+	-Wl,-Map=output.map.txt -Wl,-e,main -o M4_baremetal.hex
+arm-none-eabi-size M4_baremetal.hex
+   text	   data	    bss	    dec	    hex	filename
+     16	      0	      0	     16	     10	M4_baremetal.hex
 make[1]: Leaving directory 'J:/The_pinnacle_of_technology_is_in_my_mind/My_Source/Side_Project/ARM_Cortex_Emmbedded/STM32F412_Project'

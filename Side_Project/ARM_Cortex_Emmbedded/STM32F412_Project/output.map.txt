@@ -11,8 +11,8 @@ Linker script and memory map
 LOAD src/main.o
 LOAD startup.o
 START GROUP
-LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/thumb/v7-m/nofp\libgcc.a
-LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/../../../../arm-none-eabi/lib/thumb/v7-m/nofp\libc.a
+LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/thumb/v7e-m/nofp\libgcc.a
+LOAD C:/ST/STM32CubeIDE_1.16.0/STM32CubeIDE/plugins/com.st.stm32cube.ide.mcu.externaltools.gnu-tools-for-stm32.12.3.rel1.win32_1.0.200.202406191623/tools/bin/../lib/gcc/arm-none-eabi/12.3.1/../../../../arm-none-eabi/lib/thumb/v7e-m/nofp\libc.a
 END GROUP
 
 .text           0x08000000       0x10
@@ -68,8 +68,8 @@ LOAD linker stubs
                                  0x44 (size before relaxing)
 
 .ARM.attributes
-                0x00000000       0x2b
+                0x00000000       0x2c
  .ARM.attributes
-                0x00000000       0x2d src/main.o
+                0x00000000       0x2e src/main.o
  .ARM.attributes
-                0x0000002d       0x21 startup.o
+                0x0000002e       0x21 startup.o

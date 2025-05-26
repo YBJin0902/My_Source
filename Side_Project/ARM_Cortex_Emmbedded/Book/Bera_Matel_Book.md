@@ -1,6 +1,7 @@
 # Bera-Metal Book
 
-以現有的 STM32 Cortex M4 研究探討，在不使用 Cube 或是 example 的情況下進行開發。
+以手邊現有的開發板作探討，不同的編譯器有不同的語法與設定需要注意。
+像是 Keil 不是使用 Makefile 與 Linker Script 而是其他設定檔。
 
 ### 章節
 #### 1. Linker Scrpit
