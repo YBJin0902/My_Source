@@ -48,7 +48,7 @@
 
 假設在產品的 Datasheet，我們可以看到有關於 Flash、SRAM 的位置：
 
-![example memory map](images/memory_map.png#pic_center=1x1)
+![example memory map](images/memory_map.png#pic_center=50x50)
 
 其中，RAM 有 256KB，Flash 有 1MB，在這張圖中我們可以直接知道以下兩點：</br>
 1. 主程式儲存區域有 1MB 的大小
