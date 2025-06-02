@@ -1,9 +1,51 @@
 <mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/26.2.2 Chrome/134.0.6998.178 Electron/35.1.2 Safari/537.36" version="26.2.2">
-  <diagram name="第1頁" id="B9R3KQhHfDo-BsDohxEj">
-    <mxGraphModel dx="1428" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+  <diagram name="boot" id="B9R3KQhHfDo-BsDohxEj">
+    <mxGraphModel dx="571" dy="336" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EIMrLUhukHUfMfTJxHJj-1" target="EIMrLUhukHUfMfTJxHJj-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-1" value="MCU 判斷 Boot 設定&lt;div&gt;（Flash/SRAM/System Memory）&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="120" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EIMrLUhukHUfMfTJxHJj-2" target="EIMrLUhukHUfMfTJxHJj-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-2" value="Flash memory address&lt;div&gt;0x08000000&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="240" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EIMrLUhukHUfMfTJxHJj-3" target="EIMrLUhukHUfMfTJxHJj-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-3" value="抓取中斷向量表" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="360" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="EIMrLUhukHUfMfTJxHJj-4" target="EIMrLUhukHUfMfTJxHJj-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-4" value="Reset_Handler&lt;div&gt;（開始初始化）&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="480" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-5" value="程式碼區段保留在 Flash 中執行" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="160" y="600" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-11" value="&lt;h1 style=&quot;margin-top: 0px;&quot;&gt;&amp;nbsp;Reset_Handler&lt;/h1&gt;&lt;p&gt;&lt;/p&gt;&lt;ul&gt;&lt;li&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;.data 從 Flash 複製到 RAM&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;清空 .bss (RAM)&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;設定 stack&lt;/span&gt;&lt;/li&gt;&lt;li&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255));&quot;&gt;呼叫 main()&lt;/span&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;/p&gt;" style="text;html=1;whiteSpace=wrap;overflow=hidden;rounded=0;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="400" y="480" width="200" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-12" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="1" source="EIMrLUhukHUfMfTJxHJj-4" target="EIMrLUhukHUfMfTJxHJj-11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="580" as="sourcePoint" />
+            <mxPoint x="490" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="EIMrLUhukHUfMfTJxHJj-13" value="" style="endArrow=none;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=1;entryDx=0;entryDy=0;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="1" source="EIMrLUhukHUfMfTJxHJj-4" target="EIMrLUhukHUfMfTJxHJj-11">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="440" y="580" as="sourcePoint" />
+            <mxPoint x="490" y="530" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
