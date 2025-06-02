@@ -48,7 +48,7 @@
 
 假設在產品的 Datasheet，我們可以看到有關於 Flash、SRAM 的位置：
 
-![example memory map](images/memory_map.png#pic_center=50x100)
+![example memory map](images/memory_map.png#pic_center=100x150)
 
 其中，RAM 有 256KB，Flash 有 1MB，在這張圖中我們可以直接知道以下兩點：</br>
 1. 主程式儲存區域有 1MB 的大小
@@ -79,7 +79,7 @@ Linker 是最主要幫助我們的，這時我們就需要 Linker Script 與組�
 
 在無作業系統的環境下，通常都會以以下流程執行：
 
-![boot flot chart](images/berametal-boot.png#pic_center=50x100)
+![boot flot chart](images/berametal-boot.png#pic_center=100x150)
 
 </br>
 
