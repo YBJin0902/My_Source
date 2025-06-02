@@ -63,3 +63,54 @@ Linker 是最主要幫助我們的，這時我們就需要 Linker Script 與組�
 
 </br>
 
+### 開機
+
+我們都知道當我們為晶片或開發版上電時晶片就會根據我們所寫好的程式動作。
+
+</br>
+
+開機也就是所謂的 boot，通常晶片都會有 boot 腳位，透過該腳位可以選擇開機的模式，例如從 Flash 開機、SRAM 或是 System Memory 之類的，當然若是較為複雜的系統像是 SoC 還可以指定 eMMC 或是 NAND。
+
+</br>
+
+讓晶片開機的步驟通常分為兩種：Power on 或 POR，Power on 就是簡單的直接上電開機，POR（Power on Reset）也就是 Reset 按鍵讓晶片重新開機。
+
+</br>
+
+在無作業系統的環境下，通常都會以以下流程執行：
+
+![boot flot chart](images/berametal-boot.png)
+
+</br>
+
+接下來一步一步解說：
+
+#### 1. Power on Reset：開機
+
+#### 2. Memory Alias：
+   * 指記憶體中的一個資料位址可以通過程序中的多個名稱來訪問。
+   * 通過某一個名稱修改數據，其他別名關聯的值也會改變。
+   * 根據 BOOT 設定，把我們寫的 Linker 對應到實際的 Flash、System Memory 或 RAM 中。
+
+#### 3. Startup code：
+   * 利用組合語言所撰寫之程式。
+   * 其中應該包括：
+     * 堆疊指標初始化
+     * 資料儲存區塊初始化
+     * 將 .data（初始化變數）從 Flash 複製到 RAM
+     * 將 .bss 區（未初始化變數）清為 0
+     * 若有設定 SCB->VTOR，將中斷向量表位址指向 Flash 起始
+     * 配置 System Clock（如 HSE/PLL）、FPU、Trace 等設定
+
+#### 4. Application entry：完成記憶體初始化後，跳轉到 main() 或 SystemInit() 等程式進入點。
+
+#### 5. CPU Initialization：配置 Stack、FPU、向量表位址、Cache（若使用 CMSIS）。
+
+#### 6. Peripheral Initialization：系統周邊初始化（USART、GPIO、SPI ... 等）。
+
+#### 7. Main Loop：主程式迴圈。
+
+#### 8. Interrupts Handlers：中斷期間跳離主程式處理外部事件，結束後回到主程式。
+
+</br>
+
