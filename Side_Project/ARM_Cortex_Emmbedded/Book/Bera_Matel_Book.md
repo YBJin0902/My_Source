@@ -79,7 +79,7 @@ Linker 是最主要幫助我們的，這時我們就需要 Linker Script 與組�
 
 在無作業系統的環境下，通常都會以以下流程執行：
 
-![boot flot chart](images/berametal-boot.png)
+![boot flot chart](images/berametal-boot.png#pic_center=100x200)
 
 </br>
 
