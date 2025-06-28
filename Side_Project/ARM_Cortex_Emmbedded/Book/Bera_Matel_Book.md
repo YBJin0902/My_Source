@@ -163,7 +163,7 @@ Linker 是最主要幫助我們的，這時我們就需要 Linker Script 與組�
 
 </br>
 
-# Makefile
+# Chapter 2. Makefile
 
 ### 簡介
 
@@ -211,7 +211,7 @@ int main()
 
 如果任何檔案的依賴關係發生變化，則該檔案將被重新編譯。
 
-講到這裡，重點：<font color = red>Make 只在意依賴性</font>，而 Makefile 則是處理我需要的相依性並彙整成一個規則，在最後產出一個我需要的檔案。
+講到這裡，重點：<font color = red>Make 只在意依賴性</font>，而 Makefile 則是處理我需要的相依性並彙整成一個規則，在最後產出我需要的檔案。
 
 </br>
 
@@ -374,7 +374,15 @@ CFLAGS = -Wall -O2 \ # 這是換行符號
 
 Makefile 是由很多組規一起則所構成的，所以我們需要先設計所有檔案的**相依性**，然而在檔案中又會有他們自己本身需要 include 的部分，此時我們會需要指定相關的**路徑**，接下來我們需要針對自己的開發環境選擇相對定的工具鏈，最後在 all 與 clean 中撰寫規則，all 也就是我的編譯產物，clean 則是清理中間產物，clean 非常重要，若是沒有先行清理則 Make 很有可能會吃到舊的中間產物造成編譯失敗或是產物錯誤。
 
+其中有一個很重要的觀念，在解讀 Makefile 十個人建議先從依賴性的檔案開始看，一路回推到最一開始的檔案，因為 Makefile 在運作時會優先讀取 dependencies，若 dependencies 本身擁有其他規則，則會優先去處理，若是一路往上推都有的話則以此類推。
+
 說那麼多我們不如開始自己試試看。
+
+可以根據 Makefile 資料夾內部的 Sources code 一邊觀看一邊學習。
+
+```
+這裡的 Sources code 都是 C。
+```
 
 ---
 
@@ -382,4 +390,158 @@ Makefile 是由很多組規一起則所構成的，所以我們需要先設計�
 
 #### 規則 
 
-在上面我們已經知道怎麼撰寫規則
+```makefile
+target: dependencies
+   cmd1
+   cmd2
+   cmd3
+```
+
+這是我們已經知道的基本結構，現在來多深入了解一下。
+
+Target 可以是對單一檔案的規則，也可以是對最終產物的規則，還可以是對命令的規則。所以有以下特點需要注意：
+1. 一個 Target 就只會有一個規則。
+2. 一個 Target 可以多個 dependencies，也可以有多個命令。
+
+</br>
+
+撰寫上需要注意的：
+1. Target ```:```後與 dependencies 之間需要有空白。
+2. 每個 CMD 前都需要 ```Tab```。
+
+</br>
+
+接下來讓我們來解讀一些簡單的程式
+
+```makefile
+hello: hello.c
+   gcc -o hello hello.c
+
+clean: 
+   rm -rf hello
+```
+
+* 解讀：
+  * Makefile 包含兩個 Target。
+  * 第一個 Target 為 hello，他依賴 hello.c，當執行 make hello 時，將使用 gcc 編譯 C 文件定產生執行檔。
+  * 第二個 Target 是 clean，用於刪除生成的執行檔。
+
+</br>
+
+#### 多檔案時的編譯
+
+多檔案的編譯時，Makefile 執行時會逐條比對規則。
+
+若某規則的所有 input 均滿足，才會執行該規則。否則，Makefile 會先執行其他可以先執行的規則，最後再回去執行該規則。
+
+```makefile
+main: main.o sub.o
+   gcc main.o sub.o -o main
+
+main.o: main.cpp
+   gcc main.cpp -c
+
+sub.o: sub.cpp
+   gcc sub.cpp -c
+
+clean:
+   rm -rf main.o sub.o
+```
+
+讓我們來依順序解讀一下上面這個程式：
+1. Makefile 執行後第一個抓到的 Target 為 main， main 需要 main.o 跟 sub.o 這兩個目的檔。如果gcc找得到這兩個目的檔，才會開始執行main規則。
+
+2. gcc 無法找到這兩個檔案（因為還沒有編譯），因此 gcc 會尋找第一個 dependency，也就是 main.o，接續 main.o 的規則。
+
+3. 到了 main.o，其 dependency 是 main.cpp。 main.cpp就在這個目錄下，因此 gcc 執行 command（gcc main.cpp -c），產生 main.o，並回到 main 規則。
+
+4. 有了main.o，gcc 繼續尋找第二個 dependency (sub.o)。
+
+5. 於是進入 sub.o 規則，找到了 sub.cpp，執行此規則的command (gcc sub.cpp -c)，產生了sub.o。
+
+6. 再次回到 main 規則，發現此時所有 dependencies 都滿足了，終於可以開始進行真正的 command，把所有的 obj 編譯成 main 這隻程式。
+
+</br>
+
+#### 變數使用
+
+現在讓我們加入一些變數，在 Makefile 中變數可以為很多東西，可以為路徑、甚至為編譯工具，根據以上程式加入一個變數就可以寫成以下程式的樣子：
+
+```makefile
+CC = gcc
+
+main: main.o sub.o
+   ${CC} main.o sub.o -o main
+
+main.o: main.cpp
+   ${CC} main.cpp -c
+
+sub.o: sub.cpp
+   ${CC} sub.cpp -c
+
+clean:
+   rm -rf main.o sub.o
+```
+
+</br>
+
+#### Include
+
+在 Makefile 我們可以明確告訴專案與編譯器標頭檔的位置：
+
+```makefile
+FreeRTOSINC = FreeRTOS/Include
+
+INCLUDE = -Iinc \
+          -IDrivers/Device/inc \
+          -I${FreeRTOS_INC}
+```
+
+</br>
+
+#### Tool-Chain Setup
+
+這裡需要注意！每個環境與晶片所需要的工具鏈設定不一樣；這裡只舉例，真正在設計與撰寫時請根據 Datasheet 去查詢與實作。
+
+在 Bare-Metal 中最常使用的 Tool-Chain Setup：
+1. CC：編譯器，用來編譯 C 程式。
+2. LD：連結器，雖然這裡最終用 CC 來做連結，但仍定義了 LD。
+3. OBJCOPY：可以用來轉換格式（例如 ELF ➜ bin），雖然這份 Makefile 沒用到。
+4. SIZE：顯示可執行檔（ELF）的記憶體佔用資訊。
+5. AS：彙編器，用來編譯 startup.s。
+
+```
+CC = arm-none-eabi-gcc
+LD = arm-none-eabi-ld
+OBJCOPY = arm-none-eabi-objcopy
+SIZE = arm-none-eabi-size
+AS = arm-none-eabi-as
+```
+
+</br>
+
+####  MCU 設定
+
+有時
+
+```
+
+```
+
+</br>
+
+# Chapter 3. Linker Script
+
+</br>
+
+# Chapter 4. Startup Code
+
+</br>
+
+# Chapter 5. System Initialization
+
+</br>
+
+# Chapter 6. C code to I/O & System control
+
+</br>
