@@ -1247,7 +1247,7 @@ Start-up code 是第一個在 MCU POR(Power on reset)後運行的程式。
 
 執行基本任務，使 MCU 準備好運行 Application 。
 
-
+> 它們是彙編程式指令，這意味著它們告訴彙編程式一些事情，但不產生「程式碼」。
 
 </br>
 
@@ -1275,9 +1275,9 @@ Start-up code 是第一個在 MCU POR(Power on reset)後運行的程式。
 
 ## 程式部分
 
-讓我們先看一個基本的 Startup code：
+讓我們先看一個基本的 Startup code 附上逐行說明：
 
-```s
+```asm
 Reset_Handler:
 
 /* Copy the data segment initializers from flash to SRAM */
@@ -1323,7 +1323,95 @@ bl SystemInit             ; 初始化時鐘等硬體系統設定
 2. 清除 .bss 區段（未初始化變數）為零
 3. 呼叫系統初始化（SystemInit）、C 序言（__libc_init_array）與 main
 
+## 指令部分
+
+#### .syntax	unified
+
+使用現代組譯器語法 + 自動生成 IT 指令。放在源文件的頂部。
+
 </br>
+
+#### .weak		label{,label}
+
+允許 'label' 未定義。如果未定義，它將具有 NULL (0x00000000) 的值。
+
+</br>
+
+#### .weakref         label,defaultLabel
+
+允許 'label' 未定義。如果未定義，它將具有另一個標籤的值。
+
+</br>
+
+#### .section         sectionName
+
+從現在開始，所有輸出都進入名為 'sectionName' 的區段
+
+</br>
+
+#### .align           [bitposition]
+
+對齊輸出偏移
+
+</br>
+
+#### .long            value
+
+輸出一個 32 位的值
+
+</br>
+
+#### .text 
+
+從現在開始，所有輸出都進入名為 '.text' 的區段
+
+與 .section .text 相同
+
+</br>
+
+#### .func            label[,actualLabel]
+
+標記函數 'label' 的開始，以便鏈接器可以在未被引用時排除該塊
+
+</br>
+
+#### .endfunc
+
+標記函數的結束
+
+</br>
+
+#### .pool
+
+允許組譯器在此處放置常數
+
+</br>
+
+#### .size            label,size
+
+告訴鏈接器該符號指向的塊的長度（以位元組為單位）
+
+</br>
+
+#### .thumb_func      label
+
+標記這是一個 thumb 函數，如果函數是通過 'bx' 或 'blx' 調用的，則需要
+
+</br>
+
+#### .type            label,%type
+
+指定符號的類型。如果某處有指向該函數的指標，則需要。
+
+</br>
+
+#### .cpu             cpuType
+
+cpuType 可能是 cortex-m0、cortex-m3 或 cortex-m4。
+
+</br>
+
+> 每個晶片都會要有不同的軟體函數與需要啟動的部分請根據 Datasheet 與使用者手冊設計。
 
 
 
