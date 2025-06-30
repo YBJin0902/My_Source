@@ -7,10 +7,10 @@
 
 ### 章節
 #### Chapter 1 Bare-Matel 概述
-#### Chapter 2 系統論述
-#### Chapter 3 專案設計與構思
-#### Chapter 4 初步設計
-#### Chapter 5 周邊設計
+#### Chapter 2 Makefile
+#### Chapter 3 Linker Script
+#### Chapter 4 Startup code
+#### Chapter 5 System Initialization
 
 </br>
 
@@ -522,15 +522,340 @@ AS = arm-none-eabi-as
 
 ####  MCU 設定
 
-有時
+在我們開發單晶片時會需要設定晶片的架構，以一般的 ARM Cortex-M3 為例：
 
-```
+```makefile
+MCU_FLAGS = -mcpu=cortex-m3 -mthub -mfloat-abi=soft
 
+# -mcpu=cortex-m3：CPU 為 Cortex-M3。
+# -mthumb：編譯為 Thumb 指令集。
+# -mfloat-abi=soft：使用軟體浮點數運算（無 FPU）。
 ```
 
 </br>
 
+####  編譯參數設定
+
+通常會叫做 ```CFLAGS```，此為 GNU Make 的慣例變數，用來指定 C 語言的編譯器參數。
+
+若你用 make 呼叫 gcc 編譯 .c → .o，這些參數就會自動加上。
+
+```
+CFLAGS = $(MCU_FLAGS) -Wall -O2 $(INCLUDES)
+
+# -02 編譯器優化等級 2，權衡執行效率與編譯時間，適用於大部分開發情境
+```
+
+</br>
+
+### Try Try 看
+
+根據 Makefile 資料夾內部的 Makefile 與 C code 開始試試看
+
+### 補充
+
+兩個重要的 GUN Make 內建函數：
+
+1. patsubst </br> 「字串模式取代」，常用於把副檔名 .c 轉成 .o、或是改變路徑、目標目錄等。
+
+2. wildcard </br> 搜尋符合特定模式的檔案名稱。
+
+</br>
+
 # Chapter 3. Linker Script
+
+### 簡介
+
+Linker Script（連結器腳本）是一種指令文件，用來告訴「連結器（linker）」如何將各個編譯出來的目標檔（.o）排列、放進記憶體中。
+
+Linker 的作用就是把輸入檔（object file）的 section 整理到輸出檔的 section。除此之外也會定下每個 object file 中尚未確定的符號位址，所以如果有 object file 用到不存在的 symbol，就會出現常看到的 <font color=red>undefined reference error</font>。
+
+而 linker script 就是提供給 linker 參考的文件，它告訴 linker 我想要怎麼擺放這些 section，甚至也可以定義程式的起始點在哪邊。
+
+在嵌入式開發中，沒有作業系統幫你載入與排程程式，你必須自己告訴系統「程式從哪裡執行、資料放在哪裡」，這正是 linker script 的功能。
+
+```
+Note : 這裡的 section 翻譯是指區段
+```
+
+</br>
+
+### 流程
+
+在我們知道開機時我的晶片在做甚麼之後，就可以來了解 Linker。
+
+MCU 開機（或 POR）會判斷開機模式，由 Flash memory 開始讀取，並抓取中斷向量表，之後藉由 Entry point 開始進行初始化與跳入 main ，其中主程式會一直保留在 Flash 中執行。
+
+那中斷向量的記憶體位置由這裡做宣告，但註冊則是在 Assembly 中；初始化部分也會是在 Assembly 完成。
+
+</br>
+
+經由這些說明可以清楚知道我們的 Linker Script 應該要做的事：</br>
+##### 1. 將需要運行的主程式區塊宣告好
+##### 2. 將 RAM 宣告好
+##### 3. 設定向量表區塊
+##### 4. 設定資料區塊
+##### 5. 決定資料的儲存位置
+
+</br>
+
+## 程式部分
+
+### 五個關鍵部分
+
+* memory：定義 embedded 可以使用的記憶體區域，需指定起始位置、大小和存取權。
+  * 每個區塊都需要有一個名稱，例如：Flash、RAM。
+  * 存取權限：ｒ讀取、ｗ寫入、ｘ執行。
+
+* sections：memory 中定義的記憶體區域內不同部分的位置。
+  * 例：.text 程式、.data 初始化資料、.bss  未初始化資料。
+
+* entry：設定程式執行的入口點。
+
+* symbols：在連結器檔案中定義自訂符號。
+  * 這些符號可用於各種目的，例如：定義特定部分或記憶體區域的起始和結束位址，或作為程式碼中的常數。
+
+</br>
+
+![linker_script_fromt](images/linker_script_fromt.png#pic_center=100x150)
+
+</br>
+
+### Linker Script 語法
+
+在開始前先讓我們看一下 Linker Script Code 會長甚麼樣：
+
+![Linker Script Code](images/linkerscript_1.png#pic_center=100x150)
+
+</br>
+
+根據這張程式碼可以總結出一個設計流程：
+
+Step 1. 設定程式入口點 (entry) </br>
+Step 2. 定義記憶體區域 (memory) </br>
+Step 3. 指定 sections </br>
+Step 4. 定義符號 </br>
+Step 5. 儲存附檔名為：.ld </br>
+
+</br>
+
+接下來開始講解語法，接下來不會根據上述的流程逐步講述，因為不是全部都會用到。
+
+#### 重點：請想像自己是在寫記憶體堆疊，一層一層的寫，才不容易亂掉
+
+</br>
+
+#### MEMORY
+
+對於指定記憶體區塊的大小和位置。
+
+```ld
+MEMROY
+{
+  name (attributes) : ORIGIN = address, LENGTH = size
+}
+```
+
+此區域用於宣告記憶體區塊，請根據實際大小作宣告。在這裡的 FLASH 與 RAM 就像是 ```#define``` 的定義，name 請自便。
+
+1. ORIGIN：記憶體最一開始的基本位址。
+   * 接下來用到時會根據這個位置開始往下長。
+
+2. LENGTH：該區段的容量大小。
+   * Byte 作為單位來進行計算。
+   * 假設一個記憶體的區段為 0x30000000 ~ 0x303FFFFF，則為 4MB。
+
+3. 再次複習，存取權限 (attributes)：ｒ讀取、ｗ寫入、ｘ執行。
+
+</br>
+
+實際上可能會長得像這樣：
+
+```ld
+MEMROY
+{
+  FLASH (rx) : ORIGIN = 0x30000000, LENGTH = 4M
+  RAM (rwx) : ORIGIN = 0x80000000, LENGTH = 256M
+}
+```
+
+</br>
+
+#### SECTIONS
+
+Linker Script 的核心：SECTIONS 區塊。這是決定程式碼與資料實際如何放入記憶體的地方。
+
+</br>
+
+常見的記憶體區段：
+
+| Section 名稱 | 用途說明                   | 放在哪裡              |
+| :----------: | :----------: | :----------: |
+| `.text`    | **程式碼**段（function）     | 通常放在 FLASH（唯讀可執行） |
+| `.rodata`  | **唯讀資料**（如 const 字串）   | FLASH             |
+| `.data`    | **已初始化變數**（int a = 3;） | RAM（執行時）          |
+| `.bss`     | **未初始化變數**（int b;）     | RAM               |
+| `.stack`   | **堆疊**空間               | RAM               |
+| `.heap`    | **動態記憶體**（malloc）      | RAM               |
+
+
+請注意以上為常見，不一定是每個都會需要，我相信聰明的你一定可以看出來那些是必要的！
+
+</br>
+
+總體概觀：
+
+```ld
+SECTIONS
+{
+  .text : { ... } > FLASH
+  .data : { ... } > RAM
+  .bss  : { ... } > RAM
+}
+```
+
+須注意，在 LD 中是不吃 ```tab``` 的，一律要使用 ```space```。
+
+</br>
+
+---
+
+請注意這個點 ```.```，他是 Location Counter，代表指向的位址，一開始這樣講可能會很抽象，你可以把它想像成是一個滑鼠的指標，現在只到哪記憶體就會寫到哪，舉個例子：
+
+```ld
+MEMORY
+{
+   FLASH = ORIGIN = 0x30000000 , LENGTH = 4MB
+}
+
+SECTIONS
+{
+  .text : { *(.text*) }  > FLASH  /*1KB*/
+  .rodata : { *(.rodata*) }  > FLASH  /*1KB*/
+}
+```
+
+假設我的程式與唯讀資料的大小都剛好是 1KB，讓我們依序來解讀一下：
+1. Location Counter 目前在 ```text``` 的位置
+2. 將程式區段寫入 FLASH 中，從 0 開始，因為是第一個，0x30000000 + 1KB = 0x30000400
+3. 接下來 Location Counter 在 ```rodata``` 的位置，接續上次寫入後的位置開始繼續往下寫
+4. 將唯讀資料寫入 FLASH 中，從 0x30000400 開始，0x30000400 + 1KB = 0x30000800
+
+</br>
+
+再多舉一個例子加深印象，因為很重要！！！
+
+```ld
+SECTONS
+{
+  . = 0x10000;
+  .text : { *(.text*) }
+  . = 0x8000000;
+  . data : { *(.data*) }
+  .bss : { *(.bss*) }
+}
+```
+
+依序解讀：
+1. Location Counter 移到 0x10000
+2. 在這裡寫入 .text 的 section
+3. Location Counter 移到 0x8000000
+4. 在這裡寫入 .data 與 .bss 的 section
+
+---
+
+</br>
+
+再有以上基本認知後，開始來了解我該如何設計我的 LD secion 本體。
+
+**SECTIONS 內部各區段基本架構：**
+
+```ld
+section [address] [(type)] :
+  [AT(lma)]
+  [ALIGN(section_align) | ALIGN_WITH_INPUT]
+  [SUBALIGN(subsection_align)]
+  [constraint]
+{
+  output-section-command
+  output-section-command
+  .
+  .
+  .
+
+} >region [AT>lma_region] [:phdr :phdr ...] [=fillexp]
+
+```
+
+逐一說明：
+
+| 欄位                 | 說明                                            |
+| :------------------: | :--------------------------------------------- |
+| `section`          | 區段名稱（如 `.text`, `.data`, `.bss`）              |
+| `[address]`        | **虛擬地址（VMA）**，代表此區段執行時的起始地址                   |
+| `[(type)]`         | 區段類型，可省略，較少使用（除非使用特殊段屬性）                      |
+| `:`                | 開始定義此段內容                                      |
+| `AT(lma)`          | **載入地址（LMA）**，代表此段在映像檔中的位置（例如在 FLASH 中）       |
+| `ALIGN(...)`       | 設定段起始地址的對齊大小（例如 `ALIGN(4)` 就會四位元組對齊）          |
+| `ALIGN_WITH_INPUT` | 對齊方式與輸入段一致                                    |
+| `SUBALIGN(...)`    | 子段的對齊方式（例如內部小段落 .text.startup）                |
+| `[constraint]`     | 條件設定，如 `ONLY_IF_RO`（僅唯讀時使用）或 `SORT(...)`      |
+| `{ output-section-command }` | 包含此區段內容，也就是我們要怎麼擺放每個 section（例如 `*(.text)`）                        |
+| `>region`          | 將這個 section 放入哪個記憶體區段（對應 `MEMORY` 中定義）        |
+| `AT>lma_region`    | 指定 LMA 對應的記憶體區段名稱（與 `MEMORY` 中相對應）            |
+| `:phdr`            | 指定此 section 要對應到哪個 Program Header（for ELF 檔案） |
+| `=fillexp`         | 使用指定值填滿空隙，例如 `=0xFF` 表示填充 0xFF                |
+
+</br>
+
+在繼續往下之前，先了解甚麼是 VMA 與 LMA：
+
+* Link Script 中設計了兩種位址：VMA 和 LMA
+  * LMA 是 output file 的位置。
+  * VMA 是載入 section 到 RAM 時的位置。
+  * 大多數情況下兩者會是一樣的。
+
+| 項目                          | 說明                      |
+| :--------------------------- | :----------------------- |
+| VMA（Virtual Memory Address） | 程式執行時載入到的位址（通常在 RAM）    |
+| LMA（Load Memory Address）    | 編譯後映像檔中儲存的位址，程式碼保存的位置（通常在 ROM/FLASH） |
+
+</br>
+
+---
+
+</br>
+
+解讀一段 section 看看
+
+```ld
+.data : AT(0x08004000) /*載入的 FLASH 位址*/
+ALIGN(4)
+{
+  _sdata = .; /*data 的起址*/
+  *(.data)
+  _edata = .; /*data 的終址*/
+} > RAM
+```
+
+
+
+</br>
+
+---
+
+
+</br>
+
+#### NOLOAD
+
+#### ALIAS
+
+#### ASSERT
+
+#### Heap memory
+
+#### Stack memory
 
 </br>
 
@@ -545,3 +870,9 @@ AS = arm-none-eabi-as
 # Chapter 6. C code to I/O & System control
 
 </br>
+
+# 最後
+
+OK 以上全部都是個人涉及到的基本裸機開發知識接下來就搭配著猛男專主的音樂一起開發吧！
+
+[最棒的音樂](https://youtu.be/tQJIf9mTigc?si=QUFVnc42w9GcifWf)
