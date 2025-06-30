@@ -820,6 +820,10 @@ section [address] [(type)] :
 | VMA（Virtual Memory Address） | 程式執行時載入到的位址（通常在 RAM）    |
 | LMA（Load Memory Address）    | 編譯後映像檔中儲存的位址，程式碼保存的位置（通常在 ROM/FLASH） |
 
+簡單記憶法：
+* 有 AT 就是 LMA
+* 沒有就是 VMA
+
 </br>
 
 ---
@@ -829,7 +833,7 @@ section [address] [(type)] :
 解讀一段 section 看看
 
 ```ld
-.data : AT(0x08004000) /*載入的 FLASH 位址*/
+.data : AT(0x08004000)
 ALIGN(4)
 {
   _sdata = .; /*data 的起址*/
@@ -838,20 +842,115 @@ ALIGN(4)
 } > RAM
 ```
 
+這是一個簡單的 LD data 區段也是最經典的，前面都很好懂比較有問題的可能是後面的搬移部分，讓我們一起簡單解讀：
+1. data 的位址會在 0x08004000 開始，並以 4 位元組對齊。
+2. _sdata 的 Symbol 對應到 Location Counter 也就是目前的 data 起址。
+3. 將 data 放置到這個區段中。其中 `*` 代表「所有輸入檔案」。
+4. _edata 的 Symbol 對應到寫入完成後的 Location Counter 也就是目前的 data 終址。
+5. 最後將其搬移到 RAM 中。
 
+</br>
+
+那問題來了：為甚麼要搬移到 RAM 中 ～
+
+雖然 .data 區段的初始化資料儲存在 FLASH（不可改變），但程式執行時，這些變數是 會被修改的，所以它們必須搬到 RAM 來執行！
+
+舉個例子：
+
+```c
+int a = 5; // 編譯時會變成 .data
+```
+
+* 5 的初始值會被儲存在 FLASH。
+* 但變數 a 是可以修改的（例如 a = 10;）
+* 而 FLASH 是唯讀的，不能在執行時修改 → 所以必須把 a 搬到 RAM 去執行。
+
+相信聰明的你也可以同步了解 `.bss` 了。
 
 </br>
 
 ---
 
+</br>
+
+接下來讓我們來談談 Symbol，通常我們會用來代表一個區段的開始與結束的位址，例如 _smodule 代表 module 的開始，而 _emodule 則代表 module 的結束。
+
+它的本質是一個<font color=red>符號</font>，對應到一個記憶體位址，那想當然他不會占用記憶體空間。
+
+特點：
+* 它可以被 extern 到 C code 或 starup code 中使用。
+* 它可以在 C code 中當作變數來使用。
+* 它的值是地址，不是變數的值。
+* 通常會用在啟動階段的 .data 初始化與 .bss 清除流程中。
+
+</br>
+
+---
+
+</br>
+
+恭喜你會了 LD 中最重要的部分，那我們來試試看解讀難一點的：
+
+```ld
+MEMORY
+{
+  FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 1024K
+  RAM   (rwx): ORIGIN = 0x20000000, LENGTH = 128K
+  CCMRAM(rwx): ORIGIN = 0x10000000, LENGTH = 64K
+}
+
+ENTRY(Reset_Handler)
+
+SECTIONS
+{
+  .text :
+  {
+    *(.text)
+    *(.text.*)
+    *(.rodata)
+    *(.rodata.*)
+    . = ALIGN(4);
+  } >FLASH
+
+  .data :
+  {
+    *(.data)
+    . = ALIGN(4);
+  } >RAM AT>FLASH
+
+  .bss :
+  {
+    *(.bss)
+    . = ALIGN(4);
+  } >RAM
+}
+```
+
+</br>
+
+#### ENTRY : 指定程式的「入口點（entry point）」
 
 </br>
 
 #### NOLOAD
 
+表示在程式啟動期間不應將特定部分載入記憶體。
+
+Debug 期間使用。
+
+</br>
+
 #### ALIAS
 
+為現有符號建立別名。這對於提供與舊程式碼的相容性或為常用符號創建更具描述性的名稱很有用。
+
+</br>
+
 #### ASSERT
+
+用於在連結過程中如果不滿足指定的條件則產生錯誤。這有助於確保滿足某些約束，確保某個部分不會溢出其分配的記憶體區域。
+
+</br>
 
 #### Heap memory
 
