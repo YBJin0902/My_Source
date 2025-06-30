@@ -177,7 +177,7 @@ Makefile 主要用於協助決定大型程式的哪些部分需要重新編譯�
 
 </br>
 
-在一個專案中同常我們都會有所謂的 Drivers 或是其它自己寫的標頭檔，那當我的城市中去 include 這些相關 function 時就會有所謂相依性，簡單來說：
+在一個專案中同常我們都會有所謂的 Drivers 或是其它自己寫的標頭檔，那當我的程式中去 include 這些相關 function 時就會有所謂相依性，簡單來說：
 
 ```C header
 // file name : uart.h
@@ -1234,6 +1234,98 @@ SECTIONS
 </br>
 
 # Chapter 4. Startup Code
+
+> Startup code 是用組合語言所撰寫的，這裡不講述過多的語言，指講述專門用到的。
+
+</br>
+
+## 簡介
+
+Start-up code 是第一個在 MCU POR(Power on reset)後運行的程式。
+
+引導 MCU 所需的關鍵部分初始化以及隨後目標 Application 啟動。
+
+執行基本任務，使 MCU 準備好運行 Application 。
+
+
+
+</br>
+
+主要任務：
+1. 堆疊指標初始化
+   * ​設定堆疊指標，指向 RAM 中的特定位置，用於儲存函數調用的堆疊和區域變數。
+2. 資料段初始化
+   * 將已初始化的全域和靜態變數從 FLASH/ROM 複製到 RAM。
+   * 確保這些變數在執行時具有正確的初始值。
+3. BSS 初始化
+   * 將未初始化的全域和靜態變數區域（BSS段）清零。
+   * 確保所有變數都獲得某個已知值。
+4. 向量表初始化
+   * 設定中斷向量表的位置。
+   * 確保中斷發生時能正確調用對應的中斷處理函數(IRC)。
+5. CLK 與 Debug 初始化
+   * 根據應用需求設定系統 CLK，確保程式以正確的速度運行。
+   * 設定除錯介面，如啟用或禁用 JTAG/SWD，設定 UART 用於除錯輸出。
+
+</br>
+
+這些初始化步驟通常由重置處理函數（Reset Handler）執行，完成後將控制權轉交給主程式（main() 函數），開始執行應用程式。
+
+</br>
+
+## 程式部分
+
+讓我們先看一個基本的 Startup code：
+
+```s
+Reset_Handler:
+
+/* Copy the data segment initializers from flash to SRAM */
+  ldr r0, =_sdata     ; 目的地起始位址（RAM 中 data 段開頭）
+  ldr r1, =_edata     ; 目的地結束位址（RAM 中 data 段結尾）
+  ldr r2, =_sidata    ; 資料來源（Flash 中 data 初始化值所在）
+  movs r3, #0         ; 資料拷貝的 offset
+  b LoopCopyDataInit  ; 跳至拷貝迴圈
+
+CopyDataInit:
+  ldr r4, [r2, r3]    ; 從 flash 的 sidata+r3 讀取 4 byte
+  str r4, [r0, r3]    ; 寫入 RAM 的 sdata+r3
+  adds r3, r3, #4     ; 下一筆資料
+
+LoopCopyDataInit:
+  adds r4, r0, r3     ; 當前目的地指標
+  cmp r4, r1          ; 是否到達 sdata 的結尾（edata）
+  bcc CopyDataInit    ; 如果還沒到，繼續拷貝（bcc = unsigned <）
+
+/* Zero fill the bss segment. */
+  ldr r2, =_sbss      ; .bss 段起始地址（在 RAM 中）
+  ldr r4, =_ebss      ; .bss 段結束地址
+  movs r3, #0         ; 要寫入的值（0）
+  b LoopFillZerobss   ; 跳至清除迴圈
+
+FillZerobss:
+  str r3, [r2]        ; 將 0 寫入 r2（清掉一個變數）
+  adds r2, r2, #4     ; 前進到下一個變數位址
+
+LoopFillZerobss:
+  cmp r2, r4          ; 是否到達 .bss 段結尾
+  bcc FillZerobss     ; 還沒到就繼續清
+
+bl SystemInit             ; 初始化時鐘等硬體系統設定
+  ; bl __libc_init_array  ; C++ 用：呼叫靜態物件建構子（可選）
+  bl main                 ; 呼叫主程式
+  bx lr                   ; 結束函式（實際不會回來）
+  .size Reset_Handler, . - Reset_Handler
+```
+
+整體流程簡介：
+1. 複製 .data 區段（已初始化變數）從 Flash 到 RAM
+2. 清除 .bss 區段（未初始化變數）為零
+3. 呼叫系統初始化（SystemInit）、C 序言（__libc_init_array）與 main
+
+</br>
+
+
 
 </br>
 
