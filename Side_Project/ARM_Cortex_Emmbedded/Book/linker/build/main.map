@@ -1,0 +1,108 @@
+
+Discarded input sections
+
+ .data          0x00000000        0x0 build/main.o
+ .bss           0x00000000        0x0 build/main.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+FLASH            0x08000000         0x00080000         xr
+RAM              0x20000000         0x00020000         xrw
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD build/main.o
+
+.text           0x08000000       0x7c
+ *(.isr_vector)
+ .isr_vector    0x08000000        0x8 build/main.o
+                0x08000000                vector_table
+ *(.text*)
+ .text          0x08000008       0x74 build/main.o
+                0x08000008                Reset_Handler
+                0x08000012                main
+ *(.rodata*)
+                0x0800007c                . = ALIGN (0x4)
+                [0x00000000]                _sidata = LOADADDR (.data)
+
+.glue_7         0x0800007c        0x0
+ .glue_7        0x0800007c        0x0 linker stubs
+
+.glue_7t        0x0800007c        0x0
+ .glue_7t       0x0800007c        0x0 linker stubs
+
+.vfp11_veneer   0x0800007c        0x0
+ .vfp11_veneer  0x0800007c        0x0 linker stubs
+
+.v4_bx          0x0800007c        0x0
+ .v4_bx         0x0800007c        0x0 linker stubs
+
+.iplt           0x0800007c        0x0
+ .iplt          0x0800007c        0x0 build/main.o
+
+.rel.dyn        0x0800007c        0x0
+ .rel.iplt      0x0800007c        0x0 build/main.o
+
+.data           0x20000000        0x0 load address 0x00000000
+                0x20000000                _sdata = .
+ *(.data)
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _edata = .
+
+.igot.plt       0x20000000        0x0
+ .igot.plt      0x20000000        0x0 build/main.o
+
+.bss            0x20000000        0x0
+                0x20000000                _sbss = .
+ *(.bss)
+ *(COMMON)
+                0x20000000                . = ALIGN (0x4)
+                0x20000000                _ebss = .
+
+.heap           0x20000000     0x1000
+                0x20000000                _sheap = .
+                0x20001000                . = (. + 0x1000)
+ *fill*         0x20000000     0x1000 
+                0x20001000                _eheap = .
+
+.stack          0x20001000    0x1f000
+                0x2001f000                . = ((ORIGIN (RAM) + LENGTH (RAM)) - 0x1000)
+ *fill*         0x20001000    0x1e000 
+                0x2001f000                _estack = .
+                0x20020000                . = (. + 0x1000)
+ *fill*         0x2001f000     0x1000 
+                0x20020000                _sstack = .
+                0x00000001                ASSERT ((_eheap <= _estack), ERROR: Heap and Stack overlap!)
+OUTPUT(build/main.elf elf32-littlearm)
+LOAD linker stubs
+
+.debug_info     0x00000000      0x1c6
+ .debug_info    0x00000000      0x1c6 build/main.o
+
+.debug_abbrev   0x00000000       0xcf
+ .debug_abbrev  0x00000000       0xcf build/main.o
+
+.debug_aranges  0x00000000       0x20
+ .debug_aranges
+                0x00000000       0x20 build/main.o
+
+.debug_line     0x00000000      0x106
+ .debug_line    0x00000000      0x106 build/main.o
+
+.debug_str      0x00000000      0x17c
+ .debug_str     0x00000000      0x17c build/main.o
+                                0x1e0 (size before relaxing)
+
+.comment        0x00000000       0x49
+ .comment       0x00000000       0x49 build/main.o
+                                 0x4a (size before relaxing)
+
+.ARM.attributes
+                0x00000000       0x2e
+ .ARM.attributes
+                0x00000000       0x2e build/main.o
+
+.debug_frame    0x00000000       0x48
+ .debug_frame   0x00000000       0x48 build/main.o

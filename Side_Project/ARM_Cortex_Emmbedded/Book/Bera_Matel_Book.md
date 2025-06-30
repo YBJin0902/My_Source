@@ -892,15 +892,6 @@ int a = 5; // 編譯時會變成 .data
 恭喜你會了 LD 中最重要的部分，那我們來試試看解讀難一點的：
 
 ```ld
-MEMORY
-{
-  FLASH (rx) : ORIGIN = 0x08000000, LENGTH = 1024K
-  RAM   (rwx): ORIGIN = 0x20000000, LENGTH = 128K
-  CCMRAM(rwx): ORIGIN = 0x10000000, LENGTH = 64K
-}
-
-ENTRY(Reset_Handler)
-
 SECTIONS
 {
   .text :
@@ -928,21 +919,87 @@ SECTIONS
 
 </br>
 
+`.text`：程式碼與唯讀資料
+
+* `*`：表示所有輸入檔（如 main.o、libxxx.a）
+* `.text`、`.rodata`：包含程式碼與唯讀資料
+* `.text.*`：如 .text.startup、.text.main
+* `. = ALIGN(4)`：讓下一段記憶體地址 4-byte 對齊（提升效能與避免錯誤）
+* 放在 `>FLASH`：因為程式碼與常數不會改變，可以直接存在 Flash
+
+</br>
+
+`.data`：初始化資料（可寫）
+
+* `.data`：放已初始化的變數（例如 int x = 3;）
+* `>RAM`：執行時要放在 RAM
+* `AT>FLASH`：初始值存在 FLASH 中，啟動時複製到 RAM
+* 這是最常見的 `.data` 結構：初始化資料先存放在 FLASH，執行時複製到 RAM
+
+</br>
+
+`.bss`：未初始化資料（自動清零）
+
+* `.bss`：未初始化的全域或靜態變數（例如 int x;）
+* 不佔用映像檔空間，只預留空間
+* 啟動時由 C startup code 清為 0（通常用 memset 或迴圈）
+* 執行時會佔用 RAM 空間，但不佔用 Flash 空間。
+
+</br>
+
 #### ENTRY : 指定程式的「入口點（entry point）」
+
+寫法：
+
+```ld
+ENTRY(Handler)
+```
+
+Handler 是啟動後第一個被執行的函式，通常寫在 startup.s 檔中。
 
 </br>
 
 #### NOLOAD
 
 表示在程式啟動期間不應將特定部分載入記憶體。
+* Debug 期間使用。
 
-Debug 期間使用。
+在 LD 的 SECTIONS 裡加上 NOLOAD 會告訴 linker：
+
+> 這段區域在執行時（RAM 中）需要保留空間，但在編譯出來的映像檔中不要載入資料。
+
+寫法為上述的 [constraint]。
 
 </br>
 
 #### ALIAS
 
-為現有符號建立別名。這對於提供與舊程式碼的相容性或為常用符號創建更具描述性的名稱很有用。
+在 linker script 中，ALIAS 本身不是一個內建關鍵字，但在 C 語言或啟動碼中，我們經常會看到 __attribute__((alias("..."))) 這樣的語法，用來建立「別名函式（Function Alias）」。
+
+> GCC 的 compiler attribute（不是 linker script 指令）
+
+寫法：
+
+```c
+void MyHandler(void) __attribute__((alias("Default_Handler")));
+```
+
+表示 MyHandler 其實就是 Default_Handler，編譯器與 linker 都會把它們視為同一個實體地址。
+
+為甚麼需要：
+1. 簡化中斷處理：你只要寫一份 Default_Handler()，所有沒定義的中斷都會跳進來。
+2. 保留可擴充性：使用者只要定義自己需要的 handler，不需定義全部。
+
+</br>
+
+Linker 角度看 alias 是什麼？
+
+```ld
+00000001 <Default_Handler>:
+00000001 <HardFault_Handler>:
+00000001 <NMI_Handler>:
+```
+這些 symbol 最終都會指向同一個記憶體地址。
 
 </br>
 
@@ -950,11 +1007,229 @@ Debug 期間使用。
 
 用於在連結過程中如果不滿足指定的條件則產生錯誤。這有助於確保滿足某些約束，確保某個部分不會溢出其分配的記憶體區域。
 
+寫法：
+
+```
+ASSERT(expression, "error_message")
+```
+
+| 參數                | 說明              |
+| :----------------- | :--------------- |
+| `expression`      | 一個條件（為 0 表示錯誤）  |
+| `"error_message"` | 如果條件不成立，顯示的錯誤訊息 |
+
 </br>
 
 #### Heap memory
 
+用於動態記憶體分配的 RAM 區域。在嵌入式系統中，Heap 允許在運作時使用 malloc()、calloc()、realloc() 和 free() 等 API 分配和釋放記憶體。
+
+</br>
+
+執行階段（runtime）動態配置記憶體用的區域，像：
+
+```c
+int *p = malloc(100);
+```
+
+這 100 bytes 就是從 heap 拿來的。
+
+</br>
+
+在 linker script 裡，你通常要手動劃出一塊記憶體給 heap 使用，然後由底層 malloc() 實作使用這塊區域。
+
+通常都會在 RAM 的最後一塊配置 HEAP：
+
+```ld
+.heap (NOLOAD) :
+{
+  _sheap = .;             /* heap start symbol */
+  . = . + 0x2000;         /* 分配 8KB heap 空間 */
+  _eheap = .;             /* heap end symbol */
+} > RAM
+```
+
+然後在 C 這樣實作：
+
+```c
+extern char _sheap;  // linker script 定義的 heap 起點
+extern char _eheap;  // heap 結束
+
+static char *heap_ptr = &_sheap;
+
+void *_sbrk(ptrdiff_t increment) {
+    char *prev_heap = heap_ptr;
+    if (heap_ptr + increment > &_eheap) {
+        return (void *)-1; // 堆溢出
+    }
+    heap_ptr += increment;
+    return (void *)prev_heap;
+}
+```
+
+> `_sbrk()` 是 GNU libc malloc 內部呼叫的函式，用來向系統「要空間」。
+
+</br>
+
 #### Stack memory
+
+用於儲存局部變數、函數呼叫參數和返回地址。
+
+堆疊向下增長，這意味著隨著新資料的添加，堆疊指標會向較低的記憶體位址移動。
+
+要在連結檔案中定義堆疊大小，建立一個代表堆疊頂部位址的自訂符號。通常，堆疊位於 RAM 區域的末端。
+
+</br>
+
+Stack 是一種 後進先出（LIFO） 的記憶體區域，用於儲存：
+* 函式的 區域變數
+* 函式呼叫時的 返回位址
+* 參數傳遞
+* 中斷上下文保存
+
+</br>
+
+通常我們會將 Steak 配置在 RAM 的頂部：
+
+```ld
+_estack = ORIGIN(RAM) + LENGTH(RAM);  /* 堆疊頂部（SP 初始化值） */
+
+.stack (NOLOAD):
+{
+  _sstack = .;
+  . = . + 0x1000;  /* 分配 4KB 的 stack 空間 */
+  _estack_region = .;
+} > RAM
+```
+
+> 通常會同步搭配 ASSERT 檢查 Stack 的空間是否足夠 ～ 避免 heap 與 stack 碰撞 ～
+
+</br>
+
+#### Heap & Stack
+
+這時一個經典的問題就會出現了：我的 Heap 跟 Stack 都是放在 RAM 的區段並且都是自由成長，一個向上一個向下那我怎麼知道他會不會有衝突的問題，而且我又要確保有 data 與 dss 的記憶體空間？
+
+</br>
+
+哎呀！頭好痛，此時不如讓我們喝杯咖啡緩衝一下，先來了解 Heap 與 Stack 的區別：
+
+| 項目   | Stack          | Heap                  |
+| :---- | :-------------- | :--------------------- |
+| 分配方式 | 編譯器自動分配        | `malloc` / `new` 手動分配 |
+| 生命周期 | 函式作用域          | 直到 `free` 或程式結束       |
+| 成長方向 | 通常「向下」         | 通常「向上」                |
+| 速度   | 非常快（在暫存器或 RAM） | 較慢                    |
+
+> 這就是為甚麼 `free` 很重要！！！
+
+</br>
+
+讓我們再複習一下，LD 的記憶體配置，觀察一下下面的表格：
+
+```txt
+RAM 起始地址（低）0x1000_0000
+▼
++---------------------+ <- ORIGIN(RAM)
+| .data               | ← 有初始值的變數
++---------------------+
+| .bss                | ← 未初始化變數
++---------------------+
+| .heap               | ← malloc 用，向上成長 ↑
++---------------------+
+| free space / guard  |
++---------------------+
+| .stack              | ← 向下成長 ↓
++---------------------+ <- ORIGIN(RAM) + LENGTH(RAM)
+RAM 結束地址（高）0x10FF_FFFF
+```
+
+相信看完這個表格，聰明的你已經知道了問題的答案 ～
+
+以下這是相對應的 LD :
+
+```ld
+MEMORY
+{
+  RAM (rwx) : ORIGIN = 0x20000000, LENGTH = 128K
+}
+
+SECTIONS
+{
+  /* .text 留在 Flash 就略過 */
+
+  .data : AT(_sidata)
+  {
+    _sdata = .;
+    *(.data)
+    . = ALIGN(4);
+    _edata = .;
+  } > RAM
+
+  .bss (NOLOAD) :
+  {
+    _sbss = .;
+    *(.bss)
+    *(COMMON)
+    . = ALIGN(4);
+    _ebss = .;
+  } > RAM
+
+  /* heap 從 _ebss 開始，長度自己定義 */
+  .heap (NOLOAD) :
+  {
+    _sheap = .;
+    . = . + 0x1000;  /* 4KB heap */
+    _eheap = .;
+  } > RAM
+
+  /* stack 從 RAM 頂端開始向下分配 */
+  .stack (NOLOAD) :
+  {
+    . = ORIGIN(RAM) + LENGTH(RAM) - 0x1000; /* stack 預留 4KB */
+    _estack = .;
+    . = . + 0x1000;
+    _sstack = .;
+  } > RAM
+
+  /* 最後檢查 heap 與 stack 沒有碰撞 */
+  ASSERT(_eheap <= _estack, "ERROR: Heap and Stack overlap!")
+}
+```
+
+</br>
+
+### 小結
+
+讓我們來小小總結一下：
+
+相信各位都有用過 Keil 的經驗，在那個 IDE 中我們很常會操作所謂的 `魔術棒`，其中一點開就會出現 `Target` 的選項，在下方其實就是相關的燒錄記憶體設定。
+
+下方這張圖就是 linker 結合後會有的樣子：
+
+![linker 結合](images/Linker_1.png#pic_center=100x150)
+
+</br>
+
+### Try Try 看
+
+根據 linker 資料夾內部的 Makefile 與 linker 開始試試看
+
+</br>
+
+### 補充
+
+#### KEEP
+
+保留某個符號不要被 Garbage Collection。
+
+不希望 ARM 的 ISR vector 會被優化掉。
+
+</br>
+
+#### address map
+
+在設計裸機開發中，個人習慣加上 Address Map 的功能，這是 Makefile 的功能可以直觀的輸出一個我們寫好的 Address Map 供我們檢查。
 
 </br>
 
