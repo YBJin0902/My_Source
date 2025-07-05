@@ -95,7 +95,28 @@
 
 ### Interrupt & Trap
 
-### System Calls
+在作業系統中，一個需要 OS 處理的事件就是一個 Interrupt，這些事件包含像是：輸出/輸入、程式請求服務、程式中用 0 除、程式使用不再配置記憶體內的位置 等等。
+
+Interrupt 可能由硬體產⽣（譬如終端機斷線、輸出/輸⼊完成），也可能由軟體產⽣（譬如程式中⽤ 0 除、程式要求系統服務）。這是在基本處理機就知道的知識！
+
+若⼀個 Interrupt 是由軟體產⽣（譬如⽤0除），這個 Interrupt 通常叫做 Trap；所以，所有的 Trap 是所有 Interrupt 的部份集合。
+
+</br>
+
+近代的作業系統是 Interrupt 導向（Interrupt driven）的；當作業系統進⼊電腦系統之後，<font color=red>不論是否有程式執⾏，作業系統本身都在閑置狀態</font>，有了 Interrupt 就⽴刻處理。<br>
+那需要注意<font color=red>作業系統閒置不代表 CPU 閒置</font>，因為就算作業系統步開啟任何程式，或是執行任何程式，CPU 很有可能還會執行某些系統的背景程式。
+
+</br>
+
+#### Interrupt 導向
+
+
+
+![Interrupt 導向](image.png)
+
+</br>
+
+#### System Calls
 
 ### Timer
 
