@@ -292,7 +292,7 @@ HRT (high-resolution timer) 的引入，除了帶來微秒 (microsecond) 等級�
 
 ## 讀取-解碼-執行
 
-這裡是解釋 CPU 如何執行程式，CPU 執⾏⼀道機器指令時會有幾個階段：讀取（fetch）、解碼（decode）和執⾏（execution）。
+這裡是解釋 CPU 如何執行**程式**，CPU 執⾏⼀道機器指令時會有幾個階段：讀取（fetch）、解碼（decode）和執⾏（execution）。
 
 我們可以把這三個階段再細分如下：
 * 讀取（fetch）：從記憶體中把下一道指令抄入 CPU
@@ -313,32 +313,130 @@ HRT (high-resolution timer) 的引入，除了帶來微秒 (microsecond) 等級�
 
 也被稱為馮·諾依曼架構（Von Neumann Architecture）。這是一種將程式指令記憶體和資料記憶體合併在一起的電腦設計概念結構。下圖為馮諾依曼架構框架：
 
+</br>
+
 ![Von Neumann Architecture](image-3.png)
+
+</br>
+
+簡單來說，馮諾依曼架構由五個元件組成，分別為輸入(input)、輸出(output)、運算器(Arithmetic Logic Unit)、記憶體(Memory)、控制器(Control Unit)，其中，運算器、控制器都在CPU中央處理器中。記憶體也可以分為記憶體、外存。
+
+</br>
+
+1. 讀取（Fetch）
+* 這就是裝載需要執行的指令到IR的過程。
+* 首先將PC暫存器的內容裝入MAR，並且將PC暫存器的值 +1 (因為我們完成目前這條指令之後還需要繼續進行下一條，就是透過這種方式來實現指令的順序執行的)。然後將位址指向的內容裝入MDR，最後控制單元將MDR中的內容送入IR，至此，我們完成了指令的讀取。
+
+2. 解碼（Decode）
+* 在這個步驟中，指令由處理器解碼。
+* 如果指令需要，處理器將獲得任何操作數。例如，指令MOV AX, 0。將值 0 儲存在 Ax 暫存器中。在執行指令之前，處理器將從記憶體中的下一個位置取得常數值 0。
+
+3. 執行（Execute）
+* 在最後一個階段，處理器執行指令，它在暫存器 AX 中儲存 0。
+* 處理器執行指令 MOV AX, 0。最後，它調整指令指標指向儲存在位址 0102 的下一條要執行的指令。
+
+</br>
+
+### 指令集(Instruction Set)
+
+硬體 (Hardware) 與軟體 (Software) 溝通的橋樑，也就是指令集，為什麼可以說是溝通的橋樑？</br>
+因為軟體與硬體彼此不需要去知道對方的資訊，只要知道指令集的格式就可以進行溝通了，編譯器依據指令集的格式把軟體編譯成硬體看得懂的機器碼，而硬體只要依據這個機器碼去執行相對應的運算，就可以完成我們想要的操作。
+
+指令集其實就是我們平常在操作電腦時讓 CPU 去執行的指令，我們執行的程式最後變成由 0 和 1 所組成的機器碼讓 CPU 去讀取，那這個機器碼就是一道道的指令。
+
+以 C 語言為例，會經過：前處理 (Preprocessing) -> 編譯 -> 組合語言(assembly code) -> 組譯 -> 機器碼(machine code) -> 連結 (Linking)
+
+### CPU Pipeline
+
+![CPU Pipeline](image-4.png)
+
+</br>
+
+#### IF (Instruction Fetch)
+
+Fetch 指令，先到這個要執行指令的 address，去將該指令從 memory 提取到 CPU。
+
+</br>
+
+#### ID (Instruction Decode)
+
+Decode，根據這道指令 0 和 1 的組成去判斷這道指令的內容。
+
+</br>
+
+#### EX (Execution) 
+
+CPU 知道這道指令的內容之後，就要執行相對應的運算，這裡由算術邏輯單元 (ALU)，根據這道指令的目的、輸入去計算出結果，需要計算的不只是有運算指令，還包含了 load store 指令，因為要計算出 memory 的 address，才能夠去進行訪問 (Access) 對 memory 進行讀寫，這裡還不包含 memory 讀寫。
+
+</br>
+
+#### MEM (Memory access)
+
+memory 讀寫的部分就是由 MEM stage 進行，在這裡向 ram 或是 cache 及外部的 memory 進行 access 並讀寫，將 CPU register 資料寫出去或者是將資料讀到 register 內。
+
+</br>
+
+#### WB (Write-Back)
+
+一道指令的完成，如果是計算指令會將運算後的結果寫回 destination register。
+
+</br>
+
+### 小結
+
+在這裡可以觀察到一個很直觀的問題，在並行計算中，若是多個 Process 有計算又同時需要共用這個計算結果的資源，那我們該如何知道哪個計算結果才是對的？也就是所謂的資料衝突（Data Hazards）。
+
+資料衝突（Data Hazards）：這指的是一道指令依賴已經被抄入 pipeline 的指令的結果第⼆道指令中的 C 使⽤到第⼀道已經被抄⼊ pipeline 的指令的結果。
 
 </br>
 
 ## 特殊機器指令
 
+* Atomic 指令在執行時不容許有交錯執行或被其它指令分割。當一道 atomic 指令被 CPU 偵測到並且執行時：
+  * 所有在 CPU 內各階段的其它指令都會被暫停、等到這一道 atomic 指令執行完畢後才會被繼續，而且有些指令（譬如用到 atomic 指令產生的結果的指令）可能會重頭來過（至少得再次抄入它所使用的各運算元）。
+  * Atomic 指令在執行時不能被 Interrupt 打斷，必須從頭做到尾、一氣呵成。
+  * 如果有若⼲道 Atomic 指令進⼊ CPU 或核⼼，它們都會被⼀個接⼀個地順序執⾏，但順序為何則是由硬體決定。這種情況通常在有若⼲個 CPU 或核⼼的系統中出現。
+
+</br>
+
+# Process 基本概念
+
+## 從編譯到執行
+
+這邊有點需要 Bare-Metal 的概念 ~
+
+* 編譯程式（compiler）把原始程式編譯到 .o 檔案。
+* 連結程式（linker）把.o 檔和其它程式庫函數串成⼀個可執⾏檔（譬如 a.out）。
+* 載⼊程式（loader）把可執⾏檔抄⼊記憶體準備執⾏。
+
+</br>
+
+![從編譯到執行 流程](image-5.png)
+
+</br>
 
 
 
-
-
-
-
-
-
-
-
-
-
+</br>
 
 # 參考資料：
 
 [冼鏡光並行計算講堂](https://pages.mtu.edu/~shene/VIDEOS/CONCURRENT/index-TW.html)
 
+</br>
+
 [Linux 核心設計: System call](https://hackmd.io/@RinHizakura/S1wfy6nQO)
+
+</br>
 
 [System Call (系統呼叫) - 從零開始的開源地下城](https://hackmd.io/@combo-tw/Linux-%E8%AE%80%E6%9B%B8%E6%9C%83/%2F%40combo-tw%2FBJPoAcqQS)
 
+</br>
+
 [Linux 核心設計: Timer 及其管理機制](https://hackmd.io/@sysprog/linux-timer)
+
+</br>
+
+[CPU Pipeline](https://ithelp.ithome.com.tw/m/articles/10327694)
+
+</br>
