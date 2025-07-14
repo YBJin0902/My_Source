@@ -1440,7 +1440,61 @@ Startup code 離不開我們的主程式、中斷、系統初始化還有連結�
 
 # Chapter 5. System Initialization
 
-在開始 System Initialization 前，請一定確保自己可以看懂晶片的內部硬體圖，這邊舉個簡單的例子：
+### 簡介
+
+在開始前讓我們先知道一個重要觀念，一個晶片之所以可以運作除了我們前面所提及的那些程式之外，還有像是 System Clock、晶片內部的匯流排（Bus）與中斷向量表等等。
+
+在開始繼續講解 System Initialization 前，請一定確保自己可以看懂晶片的內部硬體圖，這邊舉個簡單的例子：
+
+</br>
+
+這是一張 STM32F103 的硬體 Block 圖：
+
+![stm32f103_hw_block](images/stm32f103_hw_block.png#pic_center=100x150)
+
+</br>
+
+我們可以知道以下幾件事：
+1. CPU core 的主時脈頻率是 72MHz
+2. Clock 來源有兩個：RC 8MHz、RC 40kHz
+3. Bus 的走向，哪個協定是通過哪個 Bus 控制，這在下一章會說明
+4. NVIC 中斷控制
+
+這時讓我們在往下翻翻找找一定可以找到我們開機所需要初始化的部分，那接下來我的工作就是跟著說明書一步一步往下做。
+
+</br>
+
+接下來我只會說明一樣部會以特定開發版為例，我會同步以前很多的程式與觀念並行說明。
+
+---
+
+</br>
+
+## System NVIC
+
+NVIC 這個詞我們很常聽到，那他是甚麼，我們先來了解一下。
+
+NVIC（Nested Vectored Interrupt Controller），中文就是<font color = red>**嵌套向量中斷控制器**</font>，那顧名思義這東西就是 CPU 管理中斷的核心區域，接下來我們需要根據這些區域去設定我們的中斷表。
+
+
+
+</br>
+
+### Interrupt 與 IRQ
+
+
+
+</br>
+
+### Handler 與導向
+
+
+
+</br>
+
+## System Clock
+
+
 
 </br>
 
