@@ -545,6 +545,10 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
 
 # 作業系統和硬體基本知識
 
+在正式開始 Kernel 之前，先了解所謂的硬體 ～
+
+</br>
+
 ## 多處理機系統、對稱多處理機系統、多核心系統 
 
 何謂多處理機系統：多處理機系統（ Multiprocessor Systems）通常也叫做平⾏系統（Parallel Systems）或緊密連接系統（Tightly Coupled Systems）有若⼲個CPU。
