@@ -2,9 +2,30 @@
 
 ### 介紹
 
-主旨為開發 Operating System（OS、作業系統）
+主旨為開發與研究 Operating System（OS、作業系統）
 
-目前針對對象：Linux Kernel
+目前針對對象：Linux 發行版
+
+#### 這份筆記的讀法
+
+我會切分成很多不同的檔案說明較為專業的項目，像是 Linux Kernel 中的各項、OS 的執行續 ... 等。
+
+先讓我們有個基礎的認知與了解 ~
+
+
+# Linux 簡介
+
+作為一個我們平常可能會去使用的作業系統，現在要去學習的是：
+1. 如何製作 image/iso
+2. 硬體與整體架構
+3. Kernel 中的功能應用與開發
+4. OS 中的 Task 運行
+
+</br>
+
+那先讓我們來聊聊整體 Linux 的架構。
+
+</br>
 
 # Linux 架構
 
@@ -12,11 +33,11 @@
 
 </br>
 
-![alt text](image-6.png)
+![alt text](image-8.png)
 
 </br>
 
-直接看圖可能會很抽象，先讓我以我們常用的 Linux OS 主機為例，一個主機會有 SoC、滑鼠、鍵盤...等硬體相關，再來就是作業系統部分，假設我們裝的是 Ubuntu 作業系統（現行Linux LTS），我們就會有：
+直接看圖可能會很抽象，先讓我以我們常用的 Linux OS 主機為例，一個主機會有 SoC、滑鼠、鍵盤...等硬體相關，再來就是作業系統部分，假設我們裝的是 Ubuntu 作業系統（現行Linux LTS），我們就會有（先不看 bootloader）：
 
 * User space：APP，這些使用者應用程式可以是預設也可以是後來安裝的。
   
@@ -90,8 +111,7 @@ Linux 系統由三個主要的程式碼主體組成：
 
   * System libraries 允許應用程序向 Linux 核心發起系統呼叫（system call）。進行系統呼叫涉及從非特權的用戶（unprivileged user）模式轉移到特權的核心模式（privileged kernel mode）。這些庫還提供了一些不對應於系統呼叫的常用功能，如排序算法、數學函數和字串操作常用功能。
 
-
-
+</br>
 
 
 
