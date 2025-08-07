@@ -4,6 +4,55 @@
 
 在正式開始之前我們先來了解有關 Linux Kernel 的概念
 
+# 作業系統和硬體基本知識
+
+在正式開始 Kernel 之前，先了解所謂的硬體 ～
+
+</br>
+
+## 多處理機系統、對稱多處理機系統、多核心系統 
+
+何謂多處理機系統：多處理機系統（ Multiprocessor Systems）通常也叫做平⾏系統（Parallel Systems）或緊密連接系統（Tightly Coupled Systems）有若⼲個CPU。
+
+多處理機系統它的優點：
+* 增加⽣產⼒：可以完成更多的⼯作。
+* 較⼤的系統經濟效益：因為系統中有共⽤的資源，⼀個多處理機系統會⽐很多個單處理機系統更經濟。
+* 增加可靠度：⼀個處理機的問題不會使整個系統「當機」。
+
+</br>
+
+在多核心系統中我們可以先以硬體與軟體設計兩種方式進行區分：
+
+### 1. 硬體
+
+* 同構多核心架構：系統中的處理器在架構上是相同的，像是雙核心的架構中兩個都為 Cortex-A9
+
+* 異構多核心架構：系統中的處理器在架構上是不同的，像是雙核心的架構中一個為 Cortex-A9、一個為 Cortex-M4
+
+### 2. 軟體設計
+
+* SMP：Symmetric multiprocessing（對稱式架構），多個核心運行一個作業系統，而這個作業系統同等的管理多個內核，這種運作模式就是簡單提升效能。
+  * 目前支援此運行模式的作業系統有：Linux，Windows，Vxworks。
+  * 目前，我們的PC機使用的就是這種運作模式，一般適用於功能複雜，對即時性要求不高的系統。
+
+* AMP：Asymmetric multiprocessing（非對稱式架構），多個核心相對獨立運作不同的任務，每個核心之間相互隔離，可以運行不同的作業系統或裸機程式。
+  * AMP 的運作模式基本上不會有開銷問題，尤其是在執行裸機程式時，甚至沒有開銷，這種模式比較適合即時性高的應用。
+  * 兩個核心之間的通訊與資源共享需要有一套優秀的處理機制。
+  * 雖然多個核心可以運行不同的系統，但是需要有一個主要的核心，需要使用該核心來控制整個系統以及其他的核心。
+    * 例如：一個核心運行運行即時性較高的任務，另一個核心運行 UI 介面。
+
+* BMP：bound multiprocessing，BMP 運作模式與 SMP 類似，同樣也是一個 OS 管理所有的核心，但開發者可以指定將某個任務只在某個指定核心上執行。
+
+</br>
+
+## 雙執行模式
+
+雙執⾏模式（Dual-Mode）：使⽤⼈模式（user mode）和作業系統模式（supervisor mode）。這兩個模式由⼀個模式數元（mode bit）決定。
+
+</br>
+
+---
+
 </br>
 
 ## 工具
@@ -328,7 +377,6 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
 
 * 觀察 `start_kernel()`、`init/main.c` 的流程
 * 分析系統初始化：記憶體子系統、排程器、裝置初始化
-* ✅ 你可以對 `start_kernel` 下斷點，逐行 trace
 
 </br>
 
@@ -336,7 +384,6 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
 
 * UML 會透過 user-space syscall 模擬 Linux 真實系統呼叫
 * 可觀察 `sys_read()`, `sys_write()`, `sys_execve()` 的進入與返回
-* ✅ 在 GDB 下斷點於 `do_sys_open`, `sys_clone`, `sys_exit`
 
 </br>
 
@@ -344,7 +391,6 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
 
 * trace `schedule()`、`wake_up()`、`do_fork()` 等
 * 分析 Task struct（`struct task_struct`）內容
-* ✅ 可以學會 Linux 如何維護執行緒與上下文切換
 
 </br>
 
@@ -352,7 +398,6 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
 
 * 分析 kernel 如何建立 page table
 * 熟悉 `kmalloc()`、`vmalloc()`、`brk()`、`mmap()` 的機制
-* ✅ 查看 slab/slub allocator 的行為，甚至觀察 page fault 處理流程
 
 </br>
 
@@ -364,21 +409,18 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
   insmod hello.ko
   ```
 * 可用 GDB trace `init_module()`、模組初始化流程
-* ✅ 模組開發學習、模擬 driver 開發流程無風險又快速
 
 </br>
 
 **檔案系統 VFS 與 syscall interaction**
 
 * UML 支援擬態的磁碟 image（ubd），你可以在其中執行 `open()`, `read()`, `write()` 並 trace kernel 的 VFS 層
-* ✅ 學會 `do_filp_open()`、`vfs_read()` 的內部機制
 
 </br>
 
 **Signal / IPC / clone / exec 系統行為**
 
 * UML 可以真實模擬行程之間的 IPC、signal 傳遞、execve 換程式
-* ✅ 適合深入學 `clone()` vs `fork()`，以及 user-space interaction 機制
 
 </br>
 
@@ -539,58 +581,34 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
 
 </br>
 
----
-
-</br>
-
-# 作業系統和硬體基本知識
-
-在正式開始 Kernel 之前，先了解所謂的硬體 ～
-
-</br>
-
-## 多處理機系統、對稱多處理機系統、多核心系統 
-
-何謂多處理機系統：多處理機系統（ Multiprocessor Systems）通常也叫做平⾏系統（Parallel Systems）或緊密連接系統（Tightly Coupled Systems）有若⼲個CPU。
-
-多處理機系統它的優點：
-* 增加⽣產⼒：可以完成更多的⼯作。
-* 較⼤的系統經濟效益：因為系統中有共⽤的資源，⼀個多處理機系統會⽐很多個單處理機系統更經濟。
-* 增加可靠度：⼀個處理機的問題不會使整個系統「當機」。
-
-</br>
-
-在多核心系統中我們可以先以硬體與軟體設計兩種方式進行區分：
-
-### 1. 硬體
-
-* 同構多核心架構：系統中的處理器在架構上是相同的，像是雙核心的架構中兩個都為 Cortex-A9
-
-* 異構多核心架構：系統中的處理器在架構上是不同的，像是雙核心的架構中一個為 Cortex-A9、一個為 Cortex-M4
-
-### 2. 軟體設計
-
-* SMP：Symmetric multiprocessing（對稱式架構），多個核心運行一個作業系統，而這個作業系統同等的管理多個內核，這種運作模式就是簡單提升效能。
-  * 目前支援此運行模式的作業系統有：Linux，Windows，Vxworks。
-  * 目前，我們的PC機使用的就是這種運作模式，一般適用於功能複雜，對即時性要求不高的系統。
-
-* AMP：Asymmetric multiprocessing（非對稱式架構），多個核心相對獨立運作不同的任務，每個核心之間相互隔離，可以運行不同的作業系統或裸機程式。
-  * AMP 的運作模式基本上不會有開銷問題，尤其是在執行裸機程式時，甚至沒有開銷，這種模式比較適合即時性高的應用。
-  * 兩個核心之間的通訊與資源共享需要有一套優秀的處理機制。
-  * 雖然多個核心可以運行不同的系統，但是需要有一個主要的核心，需要使用該核心來控制整個系統以及其他的核心。
-    * 例如：一個核心運行運行即時性較高的任務，另一個核心運行 UI 介面。
-
-* BMP：bound multiprocessing，BMP 運作模式與 SMP 類似，同樣也是一個 OS 管理所有的核心，但開發者可以指定將某個任務只在某個指定核心上執行。
-
-</br>
-
-## 雙執行模式
-
-雙執⾏模式（Dual-Mode）：使⽤⼈模式（user mode）和作業系統模式（supervisor mode）。這兩個模式由⼀個模式數元（mode bit）決定。
-
-</br>
+以上都是一些基本的認知，先了解之後後續才能溝通。
 
 ---
+
+</br>
+
+# Linux Kernel 預備工作
+
+讓我們再來複習一下 Linux Kernel 是在做甚麼 ～
+
+最簡單的一句話：Kernel 的作用是將 User Space 的請求傳遞給底層驅動程式，並對系統中的各設備和組件進行控制。
+
+</br>
+
+### 核心的任務
+
+從技術層面來形容：核心是硬體與軟體之間的一個中間層。作用是將應用層的請求傳遞給硬體，並充當底層驅動，對系統中的各種設備和組件進行尋址。
+
+所以意思就是說使用者無法透過 User Space 直接控制底層硬體，必須透過 Kernel 的相關操作才可以。
+
+換句話說：核心是一個資源管理程式。負責將可用的共享資源（CPU時間、磁碟空間、網路連線等）分配得到各個系統流程；同時它也像一個函式庫，提供了一組以系統為導向的指令。系統呼叫對於應用程式來說，就像呼叫普通函數一樣。
+
+</br>
+
+### Kernel 實作了解
+
+
+
 
 </br>
 
