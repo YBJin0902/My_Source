@@ -432,7 +432,7 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
 
 </br>
 
-## OS Kernel duty and subsystem
+# OS Kernel duty and subsystem
 
 「Linux Kernel 的所有功能」，實際上是在說明一個操作系統核心（Kernel）所承擔的所有責任與子系統。Linux Kernel 是一個模組化、功能完整的單體核心，提供了從資源管理到系統呼叫的全部功能。
 
@@ -607,8 +607,446 @@ UML（User Mode Linux）是學習 Linux Kernel 的最佳起點之一，因為它
 
 ### Kernel 實作了解
 
+Kernel 的實作其實可以分為兩種不同的設計理念：
+
+1. 微核心（Microkernel）：
+最基本的功能由中央核心（微核心）實作。所有其他的功能都委由一些獨立行程處理，這些行程透過明確定義的通訊介面與中央核心通信。
+
+2. 宏核心（Monolithic Kernel）：
+核心的所有程式碼（包含子系統，如記憶體管理、檔案系統、裝置驅動程式）都打包在同一個檔案中。核心中的每個函式都可以存取核心中其他部分。現代宏核心通常支援模組的動態載入/卸載（裁剪）。Linux 核心就是採用這種策略實作。
+
+但現代很多作業系統在實作上會借鑑對方的優點，形成所謂的「混合式核心（Hybrid Kernel）」—— 也就是在宏核心中引入部份微核心的概念，或在微核心中內嵌一些高效能的核心功能，所以理論上這可以分為兩個不同的設計與實作方式需要注意。
+
+為了避免搞混，先具體分類一下：
+
+1. 純粹的微核心系統（Microkernel OS）</br>
+代表作：MINIX3、QNX、seL4 </br>
+特徵：
+   * 核心非常小，只保留最基本的排程、記憶體管理、IPC
+   * 驅動程式、檔案系統、網路協定都在使用者空間以獨立進程運行
+   * 服務間透過 IPC 互通
+
+</br>
+
+2. 純粹的宏核心系統（Monolithic Kernel OS）</br>
+代表作：Linux（可載入核心模組的宏核心）、傳統 UNIX、早期 MS-DOS </br>
+特徵：
+   * 所有核心子系統（記憶體、檔案系統、網路、驅動）都在同一個核心態運行
+   * 彼此可以直接呼叫函式，效能高
+   * Linux 雖然支援模組動態載入（LKM），但載入後仍是核心態程式
+
+</br>
+
+3. 混合式核心系統（Hybrid Kernel OS）</br>
+代表作：Windows NT、macOS / XNU </br>
+特徵：
+   * 以宏核心為基礎，但將部分功能（如部分驅動、伺服器）移到使用者空間運行
+   * 同時保留核心態的高效能功能
+   * 兼顧穩定性與效能
+
+</br>
+
+用上面所提到的 UML 來舉例說明的話：
+
+UML（User Mode Linux）本質上屬於 Linux 宏核心（Monolithic Kernel），只是它的「執行方式」變了—— 它不是跑在裸機或虛擬 CPU 上，而是作為一個使用者空間程式在 Host Linux 上執行。
+
+</br>
+
+兩者的區分：看「核心功能」放在哪裡執行！！！
+
+微核心（Microkernel）
+* 核心內只保留最基本功能：
+  * 行程排程（Scheduler）
+  * 記憶體管理（Memory Mgmt）
+  * IPC（進程間通訊）
+  * 其他功能（檔案系統、驅動、網路協定）放到使用者空間服務進程去做。
+
+宏核心（Monolithic Kernel）
+* 核心內包含完整 OS 功能：
+  * 記憶體管理
+  * 排程
+  * 檔案系統
+  * 網路堆疊
+  * 裝置驅動
+  * 全部在核心態，且可以彼此直接呼叫函式。
+
+</br>
+
+| 判斷項目    | 微核心               | 宏核心         |
+| ------- | ----------------- | ----------- |
+| 核心功能    | 只留最基本（排程、記憶體、IPC） | 各種子系統全在核心態  |
+| 驅動位置    | 使用者空間服務           | 核心態模組或內建    |
+| 檔案系統位置  | 使用者空間服務           | 核心態模組或內建    |
+| IPC 使用量 | 很多（系統核心與服務間）      | 較少（除非跨系統通訊） |
+| 核心大小    | 幾百 KB 級           | MB 級        |
+| 效能      | IPC 開銷較大          | 呼叫延遲低       |
+| 可靠性     | 模組崩潰可重啟           | 核心崩潰會全系統掛掉  |
 
 
+</br>
+
+### Kernel 機制
+
+在 Linux 中，凡是涉及硬體資源管理、進程間協作、權限切換的操作，基本都需要透過內核機制。
+
+#### 1. 進程間通訊（IPC, Inter-Process Communication）
+
+* 每個進程有獨立的虛擬地址空間（由 MMU 與內核管理），互相不能直接存取彼此的記憶體。
+
+* 要交換資料，就必須透過內核提供的 IPC 機制，例如：
+  * 管道（Pipe / FIFO）
+  * System V IPC（消息佇列、共享記憶體、信號量）
+  * POSIX IPC（mq_*、shm_*、sem_*）
+  * 網路 Socket
+
+* IPC 的核心功能在 ipc/ 子系統。
+
+</br>
+
+#### 2. 進程切換（Context Switch）
+
+* CPU 同一時刻只執行「不多於 CPU 核心數」的進程。
+
+* 內核排程器會決定何時從一個進程切換到另一個進程，這涉及：
+  * 保存目前進程的 CPU 暫存器、程式計數器、狀態
+  * 載入下一個進程的暫存器與狀態
+
+* 與 RTOS（如 FreeRTOS）任務切換類似，但 Linux 支援更多進程狀態（TASK_RUNNING, TASK_INTERRUPTIBLE...）
+
+</br>
+
+#### 3. 進程調度（Scheduling）
+
+* 內核負責分配 CPU 時間給各個進程，決定：
+  * 哪個進程可以執行
+  * 執行多久
+  * 何時被搶佔
+
+* 由 kernel/sched/ 子系統 實現，常見的排程策略：
+  * CFS（完全公平排程器）
+  * FIFO、RR（實時排程策略）
+
+</br>
+
+### Kernel Process 管理特性
+
+#### 1. 層次結構（Process Hierarchy）
+
+* 進程之間有父子關係
+* 系統啟動後的第一個使用者進程是 init（傳統）或 systemd（現代發行版）
+* 內核啟動後會創建 init_task（PID 0），再衍生出 PID 1（systemd/init）
+
+</br>
+
+#### 2. 進程 ID
+
+* 每個進程有唯一的 PID
+* 透過 kill, ps, top 等命令可使用 PID 操作進程
+
+</br>
+
+#### 3. pstree 命令
+
+* 以樹狀圖顯示進程父子關係
+* 可看到 systemd/init 作為樹根，衍生出其他系統服務與使用者進程
+
+</br>
+
+## Linux Kernel Source Code 的組成與目錄結構
+
+Linux 內核是一個龐大的專案，主要分為三類檔案：
+
+(1) 核心代碼
+* 核心功能與子系統：排程器、記憶體管理、VFS、網路、IPC...
+* 支撐子系統：電源管理、啟動初始化
+
+(2) 非核心代碼
+* 內核自用的 C 函式庫（自包含）
+* 固件檔案
+* 虛擬化支援（KVM）
+
+(3) 輔助檔案
+* 編譯腳本（Makefile、Kconfig）
+* 幫助文件（Documentation）
+* 授權與維護者資訊
+
+</br>
+
+---
+
+*內核頂層目錄解說*
+
+| 目錄/檔案                                            | 功能                  |
+| ------------------------------------------------ | ------------------- |
+| `include/`                                       | 內核與外部模組可用的頭文件       |
+| `kernel/`                                        | 核心功能（排程器、核心管理等）     |
+| `mm/`                                            | 記憶體管理子系統            |
+| `fs/`                                            | 檔案系統（VFS）           |
+| `net/`                                           | 網路子系統               |
+| `ipc/`                                           | 進程間通信               |
+| `arch/`                                          | 架構相關代碼（ARM, x86...） |
+| `init/`                                          | 系統啟動初始化             |
+| `block/`                                         | 區塊設備層               |
+| `sound/`                                         | 聲音子系統               |
+| `drivers/`                                       | 裝置驅動（占比最大）          |
+| `lib/`                                           | 內核使用的通用函式           |
+| `crypto/`                                        | 加解密函式庫              |
+| `security/`                                      | 安全子系統（如 SELinux）    |
+| `virt/`                                          | 虛擬化支援               |
+| `usr/`                                           | 生成 initramfs 的程式碼   |
+| `firmware/`                                      | 裝置固件                |
+| `samples/`                                       | 範例代碼                |
+| `tools/`                                         | 開發與測試工具             |
+| `Kconfig` / `Makefile` / `scripts/`              | 編譯配置與腳本             |
+| `COPYING` / `MAINTAINERS` / `CREDITS` / `README` | 授權、維護者、貢獻者、說明文件     |
+
+</br>
+
+# Linux 內核體系結構簡析
+
+Linux 系統的結構可以分為用戶空間與內核空間兩大部分：
+
+</br>
+
+![linux 內核架構](../images/linux_內核架構.png)
+
+</br>
+
+User Space 不贅述。
+
+<br>
+
+### 內核空間（Kernel Space）
+
+Linux 內核可進一步分為 三層：
+
+#### 1. 系統呼叫接口（System Call Interface, SCI）
+
+* 實作從用戶空間到內核的呼叫機制，例如 read()、write()。
+* 依處理器架構不同而異（同一家族 CPU 也可能略有差異）。
+* 提供函式呼叫的多路複用/分解功能。
+* 架構獨立部分在 kernel/ 目錄，架構相關部分在 arch/ 目錄。
+
+</br>
+
+#### 2. 與架構無關的內核代碼（Architecture Independent Code）
+
+* 為所有 Linux 支援的 CPU 架構提供通用的核心功能，例如：
+  * 進程管理（Process Management）
+  * 記憶體管理（Memory Management）
+  * 虛擬檔案系統（VFS）
+  * 網路協定棧（Networking Stack）
+  * 設備驅動框架（Drivers Framework）
+
+</br>
+
+#### 3. 與架構相關的內核代碼（Architecture Dependent Code）
+
+* 也就是 BSP（Board Support Package）。
+* 負責與特定 CPU 架構（如 x86、ARM、RISC-V）及平台特性對接。
+* 包含啟動流程、例外處理、硬體初始化等。
+
+</br>
+
+Linux 內核實作了許多重要的系統架構屬性。在高層或低層的層次上，內核被劃分為多個子系統。
+
+Linux 也可以被視為一個整體，因為它會將所有這些基本服務整合到內核中。這與微核心（Microkernel）的架構不同，微核心只提供一些基本服務，例如通訊、I/O、記憶體與行程管理，而更高階、更具體的服務則是以外部元件的方式插入微核心層中。每種內核架構都有其優點，但這裡不進行深入討論。
+
+隨著時間的推移，Linux 內核在記憶體與 CPU 使用上變得非常高效，且具有極高的穩定性。更有趣的是，在擁有如此龐大與複雜性的前提下，Linux 依然保持了良好的可移植性。編譯後的 Linux 可以運行在大量處理器與不同架構約束、需求的平台上。舉例來說，Linux 可以運行在具備記憶體管理單元（MMU）的處理器上，也可以運行在不提供 MMU 的處理器上。
+
+</br>
+
+## Linux 內核體系結構
+
+Linux 內核包含多個核心子系統，它們協同工作以提供完整的作業系統功能。
+
+再深入講解之前可以看一張很經典的圖：[Linux Kernel Map](https://makelinux.github.io/kernel/map/)
+
+![LinuxKernelMap](../images/LinuxKernelMap.png)
+
+</br>
+
+整張圖大到不可思議，先讓我們來一步一步地看懂這張圖 ～
+
+</br>
+
+### 怎麼看這張圖（先有方向感）
+
+橫向（列）= 分層（layers）
+
+從上到下代表從使用者空間介面一路下沉到硬體：
+1. user space interfaces：使用者空間能觸到的系統呼叫與檔案介面
+2. virtual：純軟體抽象（例如 VFS、socket API）
+3. bridges：跨域的共用基礎（security、debugging、device model）
+4. logical：核心功能的實作（排程、記憶體、檔案系統邏輯…）
+5. device control：驅動框架與匯流排（platform/PCI/USB/I2C…）
+6. hardware interfaces：暫存器、中斷、DMA 等硬體近身對接
+7. electronics：最底下是真實硬體（CPU、控制器、裝置）
+
+</br>
+
+縱向（欄）= 領域（domains）
+
+由左到右大致分成 6 大域：
+1. human interfaces（人機/輸入輸出）
+2. system（系統核心）
+3. processing（處理/排程）
+4. memory（記憶體）
+5. storage（儲存/檔案）
+6. networking（網路）。
+
+</br>
+
+顏色方塊與箭頭
+
+方塊代表一個子系統或主題，箭頭代表典型的呼叫/資料流。
+
+有些半透明大框（例如 Device Model、security、debugging）是跨欄位/跨層的基礎設施，會滲透到多個區域。
+
+</br>
+
+### 逐欄導覽
+
+#### human interfaces（人機介面）
+
+* HI char devices：
+  * 終端機、輸入裝置等字元裝置（drivers/char/、drivers/input/）。
+
+* security / debugging（跨欄基礎）：
+  * LSM（SELinux/AppArmor，security/）、printk、tracepoints、ftrace、perf（kernel/trace/、tools/）。
+
+---
+
+</br>
+
+#### system（系統核心）
+
+* interfaces core / System Call Interface：
+  * 系統呼叫進入點與分派（kernel/、arch/*/entry*）。
+
+* Device Model（跨欄基礎）：
+  * 驅動模型、kobject/kset、sysfs（drivers/base/、lib/kobject.c）。
+
+* system run：
+  * 啟動與關機、電源管理（init/、kernel/power/）。
+
+---
+
+</br>
+
+#### processing（處理/排程）
+
+* threads / Scheduler：
+  * struct task_struct、CFS、RT sched（kernel/fork.c、kernel/sched/）。
+
+* interrupts core：
+  * 中斷子系統（kernel/irq/、arch/*/kernel/irq*.c）。
+
+* synchronization：
+  * spinlock、mutex、RCU、原子操作（kernel/locking/、include/linux/）。
+
+* CPU specific：
+  * SMP、per-CPU 變數、IPI（arch/*/kernel/smp*.c、kernel/smp.c）。
+
+---
+
+</br>
+
+#### memory（記憶體）
+
+* memory access：
+  * copy_to_user()/get_user() 之類的使用者/核心拷貝（include/linux/uaccess.h）。
+
+* virtual memory / memory mapping：
+  * mmap()、vm_area_struct、page fault（mm/mmap.c、mm/fault.c）。
+
+* logical memory / Page Allocator：
+  * 夥伴系統、SLAB/SLUB（mm/page_alloc.c、mm/slub.c）。
+
+* physical memory operations：
+  * DMA、IOMMU、頁面屬性（kernel/dma/、drivers/iommu/、arch/*/mm/）。
+
+---
+
+</br>
+
+#### storage（儲存/檔案）
+
+* files & directories access / Virtual File System：
+  * VFS 抽象與 open/read/write 路徑（fs/、尤其 fs/open.c、fs/read_write.c、fs/namei.c）。
+
+* page cache：
+  * 檔案快取、重入讀寫（mm/filemap.c）。
+
+* swap / network storage：
+  * 交換分頁、NFS 等（mm/swapfile.c、fs/nfs/）。
+
+* logical file systems：
+  * ext4、XFS、Btrfs…（fs/ext4/、fs/xfs/、fs/btrfs/）。
+
+* block devices / storage drivers：
+  * 通用區塊層與磁碟/控制器驅動（block/、drivers/block/、drivers/scsi/、drivers/nvme/）。
+
+---
+
+</br>
+
+#### networking（網路）
+
+* sockets access：
+  * socket()/sendmsg()/recvmsg()（net/socket.c）。
+
+* address families：
+  * AF_INET/AF_UNIX/AF_PACKET（net/ipv4/、net/unix/、net/packet/、include/net/）。
+
+* protocols：
+  * TCP/UDP/ICMP、路由、Netfilter/nftables（net/ipv4/、net/ipv6/、net/netfilter/）。
+
+* network interfaces / network device drivers：
+  * netdev 核心與 NIC 驅動（net/core/、drivers/net/）。
+
+---
+
+</br>
+
+### 試著連續看與實作
+
+#### read() 讀檔路徑（system → storage）
+
+1. system（interfaces core）：使用者呼叫 read(fd, buf, len) → 進入 __x64_sys_read（或對應架構）
+
+2. storage（files & directories access）：VFS 層 vfs_read()/__vfs_read() → 根據 inode 的 file_operations -> read_iter 分派
+
+3. storage（Virtual File System / page cache）：命中頁面快取就直接拷貝；不命中則走 readpage()/readahead
+
+4. storage（logical file systems）：ext4/xfs 實作把邏輯位移換算成磁區
+
+5. storage（block devices）：通過通用區塊層佇列 I/O 請求
+
+6. device control → hardware interfaces：儲存控制器驅動（SATA/NVMe/SCSI）發 DMA 到裝置
+
+7. 返回資料 → page cache → 複製到 user buffer（copy_to_user() 在 memory / memory access）
+
+</br>
+
+- 對照原始碼：fs/read_write.c, mm/filemap.c, fs/ext4/, block/, drivers/nvme/host/…
+
+- UML/真機實驗：strace -e read cat 大檔案 + perf record -g 看呼叫鍊；ftrace 追 vfs_read/ext4_read_iter。
+
+</br>
+
+---
+
+接下來我會從系統的主要結構切入，也是上圖的 `縱向（欄）= 領域（domains）` 這邊。
+
+</br>
+
+## Linux 內核結構
+
+
+
+
+![Linux_Kernel_arch_略](../images/Linux_Kernel_arch_略.png)
 
 </br>
 
