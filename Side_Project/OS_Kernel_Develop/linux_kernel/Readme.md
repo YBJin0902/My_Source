@@ -1037,16 +1037,53 @@ Linux 內核包含多個核心子系統，它們協同工作以提供完整的�
 
 ---
 
-接下來我會從系統的主要結構切入，也是上圖的 `縱向（欄）= 領域（domains）` 這邊。
+接下來我會從系統的主要結構切入。
 
 </br>
 
 ## Linux 內核結構
 
+我會從最接近 User Space 的地方開始說明，並一路往下。
 
+在學習 Kernel 的路上請一律先不要執著在 Programming 上，先好好了解架構與原理。
 
+</br>
 
 ![Linux_Kernel_arch_略](../images/Linux_Kernel_arch_略.png)
+
+
+</br>
+
+### 1 ) System Call Interface（SCI）：系統調用接口
+
+可以先把這一層想像成是使用者與 Kernel 溝通的介面，在我們設計一個 Linux 的 Application 時並不會實際對 Kernel 中的功能做更改或是操作，我們頂多就是調用一些 API，那想當然不同版本的 Linux Kernel 所提供的 API 當然會不一樣。
+
+- `./linux/kernel`：SCI 的實現
+
+- `./linux/arch`：SCI 依賴於系統結構的部分
+
+</br>
+
+System Call 本身涵蓋很多功能。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </br>
 

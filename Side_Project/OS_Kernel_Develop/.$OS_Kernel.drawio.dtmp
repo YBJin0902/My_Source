@@ -429,7 +429,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="-Ids85YG2VXYpldZ2NCq" name="linux kernel full arch">
-    <mxGraphModel dx="1426" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="983" dy="580" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -450,6 +450,9 @@
         </mxCell>
         <mxCell id="_E12CExKfL8UyfPNUuPX-4" value="Device control" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="640" y="120" width="200" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-5" value="Process Management" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="240" width="160" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
