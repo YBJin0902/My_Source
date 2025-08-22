@@ -429,12 +429,15 @@
     </mxGraphModel>
   </diagram>
   <diagram id="-Ids85YG2VXYpldZ2NCq" name="linux kernel full arch">
-    <mxGraphModel dx="1426" dy="841" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1426" dy="841" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
-        <mxCell id="hPDiudNFGi93LpIoVi1G-1" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="80" y="40" width="1000" height="40" as="geometry" />
+        <mxCell id="_E12CExKfL8UyfPNUuPX-17" value="" style="rounded=0;whiteSpace=wrap;html=1;dashed=1;dashPattern=8 8;" vertex="1" parent="1">
+          <mxGeometry x="70" y="100" width="940" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="hPDiudNFGi93LpIoVi1G-1" value="System Call Interface (SCI)" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="40" width="920" height="40" as="geometry" />
         </mxCell>
         <mxCell id="v1lhWvs4_xpH4cKys3fE-1" value="Process Management" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="80" y="120" width="160" height="40" as="geometry" />
@@ -446,10 +449,61 @@
           <mxGeometry x="280" y="120" width="160" height="40" as="geometry" />
         </mxCell>
         <mxCell id="_E12CExKfL8UyfPNUuPX-3" value="Networking" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="880" y="120" width="200" height="40" as="geometry" />
+          <mxGeometry x="840" y="120" width="160" height="40" as="geometry" />
         </mxCell>
         <mxCell id="_E12CExKfL8UyfPNUuPX-4" value="Device control" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="640" y="120" width="200" height="40" as="geometry" />
+          <mxGeometry x="640" y="120" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-5" value="Arch-dependent code" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="80" y="280" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-6" value="Memory Manager" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="280" y="280" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-7" value="File system types" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="280" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-8" value="Block devices" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="340" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-9" value="Character devices" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="640" y="280" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-10" value="Networking subsystem" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="280" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-11" value="IF drivers" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="840" y="340" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-12" value="Concurrency, multitasking" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="200" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-13" value="Virtual memory" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="280" y="200" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-14" value="Files and dirs :&lt;div&gt;the VFS&lt;/div&gt;" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="480" y="200" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-15" value="tty &amp;amp; device access" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="640" y="200" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-16" value="Connectivity" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="840" y="200" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-18" value="Kernel subsystem" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="120" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-19" value="Features implemented" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="200" width="160" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-20" value="Software support" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="290" width="120" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="_E12CExKfL8UyfPNUuPX-22" value="" style="shape=flexArrow;endArrow=classic;html=1;rounded=0;" edge="1" parent="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="539.76" y="410" as="sourcePoint" />
+            <mxPoint x="539.76" y="480" as="targetPoint" />
+          </mxGeometry>
         </mxCell>
       </root>
     </mxGraphModel>
