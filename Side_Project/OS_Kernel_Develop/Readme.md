@@ -248,3 +248,13 @@ Linux System 內由三個主要的程式碼主體組成：
 * [Linux Build Image](linux_build_image/Readme.md) 講述自行製作 Linux 相關之 Image
 
 </br>
+
+---
+
+</br>
+
+# 書本學習筆記
+
+[Linux 內核設計與實現（原書第3版·典藏版） Linux Kernel Development, 3/e](Book_Note/Linux_Kernel_Development_3e/Readme.md)
+
+</br>
