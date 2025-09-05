@@ -1,0 +1,76 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/27.0.5 Chrome/134.0.6998.205 Electron/35.3.0 Safari/537.36" version="27.0.5">
+  <diagram name="process descriptor" id="qKYL_KsQJ1MoeIncBSPP">
+    <mxGraphModel dx="1119" dy="432" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="0" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-1" value="" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.document2;whiteSpace=wrap;size=0.1194999694824217;" vertex="1" parent="1">
+          <mxGeometry x="120" y="80" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-2" value="" style="endArrow=none;html=1;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="vS_hGbFfFUxl8pdGoEP1-3" target="vS_hGbFfFUxl8pdGoEP1-3">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="120" y="100" as="sourcePoint" />
+            <mxPoint x="200" y="100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-3" value="struct&amp;nbsp; &amp;nbsp;task_struct" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="120" y="80" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-5" value="" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.document2;whiteSpace=wrap;size=0.1194999694824217;" vertex="1" parent="1">
+          <mxGeometry x="80" y="110" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-6" value="" style="endArrow=none;html=1;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="vS_hGbFfFUxl8pdGoEP1-7" target="vS_hGbFfFUxl8pdGoEP1-7">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="80" y="130" as="sourcePoint" />
+            <mxPoint x="160" y="130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-7" value="struct&amp;nbsp; &amp;nbsp;task_struct" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="110" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-8" value="" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.document2;whiteSpace=wrap;size=0.1194999694824217;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-9" value="" style="endArrow=none;html=1;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="vS_hGbFfFUxl8pdGoEP1-10" target="vS_hGbFfFUxl8pdGoEP1-10">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="40" y="160" as="sourcePoint" />
+            <mxPoint x="120" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-10" value="struct&amp;nbsp; &amp;nbsp;task_struct" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-11" value="" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.document2;whiteSpace=wrap;size=0.1194999694824217;" vertex="1" parent="1">
+          <mxGeometry y="170" width="120" height="160" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-12" value="" style="endArrow=none;html=1;rounded=0;entryX=1;entryY=1;entryDx=0;entryDy=0;exitX=0;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="vS_hGbFfFUxl8pdGoEP1-13" target="vS_hGbFfFUxl8pdGoEP1-13">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint y="190" as="sourcePoint" />
+            <mxPoint x="80" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-13" value="struct&amp;nbsp; &amp;nbsp;task_struct" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry y="170" width="120" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-4" value="unsigned long state;&lt;div&gt;int prio;&lt;/div&gt;&lt;div&gt;unsigned long policy;&lt;/div&gt;&lt;div&gt;struct task_struct *parent;&lt;/div&gt;&lt;div&gt;struct list_head tasks;&lt;/div&gt;&lt;div&gt;pid_t pid;&lt;/div&gt;&lt;div&gt;.&lt;/div&gt;&lt;div&gt;.&lt;/div&gt;&lt;div&gt;.&lt;/div&gt;" style="text;html=1;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=9;" vertex="1" parent="1">
+          <mxGeometry x="5" y="190" width="110" height="110" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-14" value="" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;fillColor=#f8cecc;strokeColor=#b85450;" edge="1" parent="1" source="vS_hGbFfFUxl8pdGoEP1-15">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="-40" y="244.88" as="sourcePoint" />
+            <mxPoint x="-10" y="244.88" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-15" value="process descriptor" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=none;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="-120" y="230" width="80" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-16" value="" style="shape=curlyBracket;whiteSpace=wrap;html=1;rounded=1;flipH=1;labelPosition=right;verticalLabelPosition=middle;align=left;verticalAlign=middle;rotation=90;size=0.5;fillColor=none;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="110" y="220" width="20" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="vS_hGbFfFUxl8pdGoEP1-17" value="task list" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fillColor=none;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="90" y="350" width="60" height="20" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
