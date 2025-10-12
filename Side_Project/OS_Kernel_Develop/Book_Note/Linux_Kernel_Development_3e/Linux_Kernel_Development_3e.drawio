@@ -74,7 +74,7 @@
     </mxGraphModel>
   </diagram>
   <diagram id="gbW1KxuX63z0FdvKQtWF" name="進程狀態">
-    <mxGraphModel dx="719" dy="432" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="719" dy="432" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -142,6 +142,21 @@
             <mxPoint x="470" y="200" as="sourcePoint" />
             <mxPoint x="520" y="150" as="targetPoint" />
           </mxGeometry>
+        </mxCell>
+        <mxCell id="PhUFAXZStSAjEcjfoLii-15" value="進程調度" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="330" y="130" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PhUFAXZStSAjEcjfoLii-16" value="被高優先權任務搶占" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="300" y="270" width="120" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PhUFAXZStSAjEcjfoLii-17" value="釋放" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="510" y="160" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="PhUFAXZStSAjEcjfoLii-18" value="事件請求" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;textDirection=vertical-rl;" vertex="1" parent="1">
+          <mxGeometry x="510" y="320" width="40" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="PhUFAXZStSAjEcjfoLii-19" value="事件發生" style="text;html=1;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;textDirection=vertical-rl;" vertex="1" parent="1">
+          <mxGeometry x="170" y="320" width="40" height="80" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
