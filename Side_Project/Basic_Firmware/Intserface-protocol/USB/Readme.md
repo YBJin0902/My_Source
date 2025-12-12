@@ -152,7 +152,7 @@ USB 協定中封包可以分為：
 
 ### 設備描述元定義
 
-| 位移(第幾個 Byte) | 字段名 | 長度    | 含義 |
+| 位移 (第幾個 Byte) | 字段名 | 長度    | 含義 |
 | :--- | :------------------ | :----- | :------------------------- |
 |  0 | bLength            | 1 位元組 | 描述元的長度（12H 位元組）     |
 |  1 | bDescriptorType    | 1 位元組 | 描述元的類型：裝置描述元 = 01H |
@@ -168,6 +168,37 @@ USB 協定中封包可以分為：
 | 15 | iProduct           | 1 位元組 | 產品字串描述元的索引值         |
 | 16 | iSerialNumber      | 1 位元組 | 設備序號字串描述元的索引值       |
 | 17 | bNumConfigurations | 1 位元組 | 所支援的設定數             |
+
+#### 解析 - 各欄位的詳細解釋
+
+* bLength：設備描述位元的長度，USB 設備描述元基本固定為 18 Byte，因此該值為 12 Hex。
+
+* bDescriptorType：該裝置描述位元的類型，固定為 01 Hex。
+
+* bcdUSB：以 BCD 碼表示，用以表示該裝置的 USB 版本規範。
+  * 格式：0xXXYZ，其中 XX 為版本號，Y 為次版本號，Z 為子次版本號。
+  * Ex. 0200 Hex ： 即為 USB 2.0 ver
+
+* bDeviceClass：該設備所遵循的標準設備類。
+  * 0 : 該設備的各個介面互相獨立，分別屬於不同的設備類。
+  * 1 - FE : [USB 標準協定定義](https://www.usbzh.com/article/detail-221.html)
+  * FF : 廠商自訂
+
+* bDeviceSubClass：對設備類進行更加細項的定義，表示該設備所屬的標準設備子類。
+  * 當 bDeviceClass 為 0 時，這裡也需要為 0
+  * 1 - FE : [USB 標準協定定義](https://www.usbzh.com/article/detail-273.html)
+  * FF : 廠商自訂
+  
+* bDeviceProtocol：
+* bMaxPacketSize0：
+* idVendor：
+* idProduct：
+* bcdDevice：
+* iManufacturer：
+* iProduct：
+* iSerialNumber：
+* bNumConfigurations：
+
 
 </br>
 
