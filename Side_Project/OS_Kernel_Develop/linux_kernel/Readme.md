@@ -1092,6 +1092,18 @@ System Call 本身涵蓋很多功能。
 
 
 
-
+</br>
 
 # root file system
+
+
+
+</br>
+
+# Linux Kernel Driver
+
+如何去實作一個 Kernel Driver 呢 ?
+
+其實我悶需要先判斷自己需要的是甚麼，以匯流排周邊來說我們需要的可能就是 Driver 去控制周邊的 pin 同時也包含 input/output
+
+</br>
